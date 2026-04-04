@@ -2,7 +2,10 @@
   "name": "jira-suite",
   "version": "1.0.0",
   "description": "Jira & sprint management suite for Claude Code — run loops, dashboards, decisions, task pipelines",
-  "author": "SkyWalker2506",
+  "author": {
+    "name": "Musab Kara",
+    "url": "https://github.com/SkyWalker2506"
+  },
   "license": "MIT",
   "category": "productivity",
   "keywords": ["jira", "sprint", "dashboard", "agile", "task-management", "scrum", "kanban", "project-management"],

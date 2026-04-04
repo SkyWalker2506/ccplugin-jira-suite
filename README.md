@@ -1,6 +1,14 @@
-# ccplugin-jira-suite
+# jira-suite — Claude Code Plugin
 
-Claude Code plugin for Jira and sprint management.
+by [Musab Kara](https://linkedin.com/in/musab-kara-85580612a) · [GitHub](https://github.com/SkyWalker2506)
+
+Jira and sprint management suite for Claude Code — run loops, dashboards, decisions, task pipelines.
+
+## Install
+
+```bash
+claude plugin install jira-suite@musabkara-claude-marketplace
+```
 
 ## Commands
 
@@ -28,3 +36,8 @@ This plugin requires the Atlassian MCP server for Jira API access. The configura
 ## License
 
 MIT
+
+## Part of
+
+- [claude-config](https://github.com/SkyWalker2506/claude-config) — Multi-Agent OS for Claude Code (110 agents, local-first routing)
+- [Plugin Marketplace](https://github.com/SkyWalker2506/claude-marketplace) — Browse & install all 14 plugins
