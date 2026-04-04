@@ -1,0 +1,23 @@
+{
+  "name": "jira-suite",
+  "version": "1.0.0",
+  "description": "Jira & sprint management suite for Claude Code — run loops, dashboards, decisions, task pipelines",
+  "author": "SkyWalker2506",
+  "license": "MIT",
+  "category": "productivity",
+  "keywords": ["jira", "sprint", "dashboard", "agile", "task-management", "scrum", "kanban", "project-management"],
+  "commands": [
+    "commands/jira-run.md",
+    "commands/jira-run-fast.md",
+    "commands/jira-run-detailed.md",
+    "commands/jira-cancel.md",
+    "commands/jira-start-new-task.md",
+    "commands/decide.md",
+    "commands/dashboard.md",
+    "commands/dashboard-sync.md"
+  ],
+  "skills": [
+    "skills/jira-suite/SKILL.md"
+  ],
+  "mcp": ".mcp.json"
+}

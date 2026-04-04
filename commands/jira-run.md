@@ -1,0 +1,86 @@
+---
+name: jira-run
+description: "Jira wait-and-check loop. Reads project key from docs/CLAUDE_JIRA.md. Configurable rounds and interval (e.g. 50 1s). Cancel with /jira-cancel."
+allowed-tools: ["Bash", "Read", "Write", "Edit", "Grep", "Glob", "mcp__atlassian__*"]
+argument-hint: "[rounds] [interval] — e.g. 50 1s | 10 | 10_1m | empty = 10 rounds 1min"
+---
+
+## Trigger
+
+`/jira-run`, `/JIRA-RUN`, `JiraRun 50 1s` — all trigger this command.
+
+## Execution mode
+
+| Environment | Rule |
+|-------------|------|
+| **Claude Code** | Main session: (1) `rm -f .jira-state/jira-run.stop` (2) If IP task exists -> Implementation agent `Agent(run_in_background=true)` (3) jira-run agent `Agent(run_in_background=true)`. Both run in parallel. |
+| **Cursor** | Full loop runs in current chat — background not required. |
+
+**Claude Code constraint:** Sub-agents cannot call `Agent`. Implementation agent is started **only by the main session**.
+
+## Startup (always first command)
+
+```bash
+rm -f .jira-state/jira-run.stop
+```
+
+Run at repo root: `cd "$(git rev-parse --show-toplevel)"` if needed.
+
+## Notifications
+
+**A) On start** (Claude Code not in background, Cursor in this chat):
+```
+[JiraRun] Started — Rounds: <N>, Interval: <T>, Cancel: /jira-cancel
+```
+
+**B) Normal finish:**
+```
+[JiraRun] Done — <N> rounds completed (no cancel).
+```
+
+**C) Cancelled:**
+```
+[JiraRun] Cancelled (jira-cancel / stop file).
+```
+
+## Argument resolution (`$ARGUMENTS`)
+
+| Input | Rounds | Interval |
+|-------|--------|----------|
+| empty | 10 | 1m |
+| `10` | 10 | 1m |
+| `50 1s` / `50_1s` | 50 | 1s |
+| `10 1m` / `10_1m` | 10 | 60s |
+| `1h30m` compound | — | 5400s |
+| invalid | warning | default |
+
+Units: `s`=seconds, `m`=minutes, `h`=hours (decimal supported: `0.5h`=1800s).
+
+## Auto-exit conditions
+
+1. **No MCP (round 1)** -> update `docs/jira_loop_log.md` + cancel + exit
+2. **2 consecutive empty rounds** -> log + cancel + exit
+3. **Stop file** -> check at start of each round; if exists, delete + cancel message + exit
+
+## Loop (each round sequence)
+
+1. Check `.jira-state/jira-run.stop` -> exit if exists
+2. Update `/tmp/jira_run_status.json` (watchdog)
+3. (Round 1) MCP access check -> exit if unavailable
+4. Execute `docs/CLAUDE_JIRA.md` protocol -> round summary
+5. Update empty round counter -> exit if 2 consecutive
+6. If not last round: `sleep(interval)`
+
+**Forbidden:** Bulk sleep to fake N rounds; protocol-less "N rounds done" claims; full loop in foreground on Claude Code.
+
+## Implementation Agent template
+
+See `docs/agent-template.md` — use verbatim, fill `[...]` placeholders.
+
+## Lock system
+
+See `docs/LOCK_SYSTEM.md`
+
+## Log
+
+`docs/jira_loop_log.md` — newest on top. Updated on auto-exits.
