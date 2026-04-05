@@ -3,17 +3,16 @@
 # Source this file to use retry_cmd function.
 #
 # Usage: source "$(dirname "$0")/retry.sh"
-#        retry_cmd 3 "curl -s -H ..."
+#        retry_cmd 3 curl -s -H ...
 
 retry_cmd() {
   local max_retries="${1:?Usage: retry_cmd <max_retries> <command...>}"
   shift
-  local cmd="$*"
   local attempt=0
   local delay=2
 
   while [ $attempt -lt $max_retries ]; do
-    if eval "$cmd"; then
+    if "$@"; then
       return 0
     fi
     attempt=$((attempt + 1))
