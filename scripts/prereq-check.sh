@@ -50,3 +50,28 @@ fi
 export JIRA_CONFIG PROJECT_KEY
 
 ok "Config: $JIRA_CONFIG | Project: $PROJECT_KEY"
+
+# Input validation helpers — source prereq-check.sh to use these
+validate_project_key() {
+  local key="${1:-}"
+  if [[ -z "$key" ]]; then
+    err "PROJECT_KEY is required"
+    return 1
+  fi
+  if [[ ! "$key" =~ ^[A-Z][A-Z0-9]{1,9}$ ]]; then
+    err "Invalid PROJECT_KEY: '$key' (must match [A-Z][A-Z0-9]{1,9}, e.g. JS, VOC, MYAPP)"
+    return 1
+  fi
+}
+
+validate_issue_key() {
+  local key="${1:-}"
+  if [[ -z "$key" ]]; then
+    err "ISSUE_KEY is required"
+    return 1
+  fi
+  if [[ ! "$key" =~ ^[A-Z][A-Z0-9]{1,9}-[0-9]+$ ]]; then
+    err "Invalid ISSUE_KEY: '$key' (must match KEY-123, e.g. JS-10, VOC-42)"
+    return 1
+  fi
+}
