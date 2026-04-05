@@ -11,7 +11,7 @@ argument-hint: "[N=1] — number of tasks to start (max 20)"
 2. **Priority 1 — Orphan IP cards:** In Progress cards with no working lock or stale lock (>15min)
 3. **Priority 2 — To Do:** Fill remaining N from To Do by priority DESC, transition to IP
 4. **Nothing found:** "Could not find N tasks — no orphan IP or To Do cards available."
-5. **Per card:** Start 2-step pipeline via `scripts/run_task_agent.sh`
+5. **Per card:** Start 2-step pipeline (inline — see §2-Step Pipeline below)
 
 ## 2-Step Pipeline (per task)
 
