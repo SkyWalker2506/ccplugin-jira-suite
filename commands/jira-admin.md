@@ -119,17 +119,49 @@ Add columns to an **existing** project. Skips columns that already exist.
 
 ```bash
 source ~/.claude/secrets/secrets.env 2>/dev/null
+source "$(dirname "$0")/../scripts/retry.sh"
 JIRA_AUTH_HEADER="Authorization: Basic $(printf '%s' "${JIRA_EMAIL:-$JIRA_USERNAME}:${JIRA_API_TOKEN}" | base64)"
 
 validate_project_key "<PROJECT_KEY>"
 
+# curl wrapper with HTTP 429 rate-limit handling (exponential backoff, max 4 attempts)
+curl_with_retry() {
+  local attempt=0 delay=2 http_code body result
+  while [ $attempt -lt 4 ]; do
+    result=$(curl -s -w "\n%{http_code}" "$@")
+    http_code=$(printf '%s' "$result" | tail -1)
+    body=$(printf '%s' "$result" | sed '$d')
+    if [ "$http_code" = "429" ]; then
+      attempt=$((attempt + 1))
+      if [ $attempt -lt 4 ]; then
+        echo "[rate-limit] HTTP 429 — waiting ${delay}s before retry $attempt/3..." >&2
+        sleep $delay
+        delay=$((delay * 2))
+      else
+        echo "[rate-limit] HTTP 429 — all retries exhausted." >&2
+        printf '%s\n%s' "$body" "$http_code"
+        return 1
+      fi
+    else
+      printf '%s\n%s' "$body" "$http_code"
+      return 0
+    fi
+  done
+}
+
 # Find board
-BOARD_ID=$(curl -s -H "$JIRA_AUTH_HEADER" "${JIRA_URL}/rest/agile/1.0/board?projectKeyOrId=<PROJECT_KEY>" | \
-  python3 -c "import json,sys; d=json.load(sys.stdin); print(d['values'][0]['id'] if d.get('values') else '')")
+BOARD_RESULT=$(curl_with_retry -H "$JIRA_AUTH_HEADER" "${JIRA_URL}/rest/agile/1.0/board?projectKeyOrId=<PROJECT_KEY>")
+BOARD_HTTP=$(printf '%s' "$BOARD_RESULT" | tail -1)
+BOARD_BODY=$(printf '%s' "$BOARD_RESULT" | sed '$d')
+if [ "$BOARD_HTTP" = "429" ]; then echo "❌ Rate limited fetching board — aborting."; exit 1; fi
+BOARD_ID=$(printf '%s' "$BOARD_BODY" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d['values'][0]['id'] if d.get('values') else '')")
 
 # Get existing columns (to skip duplicates)
-EXISTING=$(curl -s -H "$JIRA_AUTH_HEADER" "${JIRA_URL}/rest/agile/1.0/board/${BOARD_ID}/configuration" | \
-  python3 -c "import json,sys; d=json.load(sys.stdin); [print(c['name']) for c in d.get('columnConfig',{}).get('columns',[])]")
+CFG_RESULT=$(curl_with_retry -H "$JIRA_AUTH_HEADER" "${JIRA_URL}/rest/agile/1.0/board/${BOARD_ID}/configuration")
+CFG_HTTP=$(printf '%s' "$CFG_RESULT" | tail -1)
+CFG_BODY=$(printf '%s' "$CFG_RESULT" | sed '$d')
+if [ "$CFG_HTTP" = "429" ]; then echo "❌ Rate limited fetching columns — aborting."; exit 1; fi
+EXISTING=$(printf '%s' "$CFG_BODY" | python3 -c "import json,sys; d=json.load(sys.stdin); [print(c['name']) for c in d.get('columnConfig',{}).get('columns',[])]")
 
 # Add only missing columns — column names escaped to prevent JSON injection
 for COL in "${COLUMNS[@]}"; do
@@ -137,10 +169,11 @@ for COL in "${COLUMNS[@]}"; do
     echo "  ⏭  $COL (already exists)"
   else
     ESCAPED=$(python3 -c "import json,sys; print(json.dumps(sys.argv[1]))" "$COL")
-    RES=$(curl -s -o /dev/null -w "%{http_code}" -H "$JIRA_AUTH_HEADER" \
+    ADD_RESULT=$(curl_with_retry -H "$JIRA_AUTH_HEADER" \
       -X POST "${JIRA_URL}/rest/agile/1.0/board/${BOARD_ID}/column" \
       -H "Content-Type: application/json" \
       -d "{\"name\": $ESCAPED}")
+    RES=$(printf '%s' "$ADD_RESULT" | tail -1)
     [ "$RES" = "200" ] || [ "$RES" = "201" ] && echo "  ✅ $COL" || echo "  ❌ $COL ($RES)"
   fi
 done
