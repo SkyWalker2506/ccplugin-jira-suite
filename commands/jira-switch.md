@@ -38,7 +38,7 @@ for f in docs/CLAUDE_JIRA.*.md; do
   echo "  $key"
 done
 echo ""
-echo "Active: $(grep -oP '(?<=\*\*Key:\*\* )\S+' docs/CLAUDE_JIRA.md 2>/dev/null || echo 'none')"
+echo "Active: $(grep -o '\*\*Key:\*\* [A-Z][A-Z0-9]*' docs/CLAUDE_JIRA.md 2>/dev/null | sed 's/\*\*Key:\*\* //' || echo 'none')"
 ```
 
 ### Switch mode
