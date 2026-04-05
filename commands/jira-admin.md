@@ -233,6 +233,13 @@ open -e "$SECRETS_FILE" 2>/dev/null || ${EDITOR:-nano} "$SECRETS_FILE" 2>/dev/nu
 **If all present:**
 1. Ensure file permissions: `chmod 600 "$SECRETS_FILE"`
 2. Verify via `/rest/api/3/myself` (using header auth, not `-u`), show display name + email.
+3. Record token creation date in secrets file (only if not already present):
+```bash
+if ! grep -q "^# TOKEN_CREATED=" "$SECRETS_FILE" 2>/dev/null; then
+  echo "# TOKEN_CREATED=$(date +%Y-%m-%d)" >> "$SECRETS_FILE"
+  echo "  ✅ TOKEN_CREATED recorded in secrets.env"
+fi
+```
 
 ---
 
