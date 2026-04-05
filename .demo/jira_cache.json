@@ -1,0 +1,22 @@
+{
+  "version": 2,
+  "updated": "2026-04-05T00:00:00Z",
+  "project": "DEMO",
+  "sprint": {"name": "Sprint 1", "id": 1, "state": "active"},
+  "issues": [
+    {"key": "DEMO-1", "summary": "Set up project structure", "status": "Done", "priority": "High", "labels": ["demo"]},
+    {"key": "DEMO-2", "summary": "Implement authentication", "status": "In Progress", "priority": "High", "labels": ["demo", "security"]},
+    {"key": "DEMO-3", "summary": "Add unit tests", "status": "To Do", "priority": "Medium", "labels": ["demo"]},
+    {"key": "DEMO-4", "summary": "Deploy to staging", "status": "BLOCKED", "priority": "High", "labels": ["demo", "arch"]},
+    {"key": "DEMO-5", "summary": "Write documentation", "status": "To Do", "priority": "Low", "labels": ["demo"]},
+    {"key": "DEMO-6", "summary": "Code review feedback", "status": "WAITING FOR APPROVAL", "priority": "Medium", "labels": ["demo"]}
+  ],
+  "stats": {
+    "total": 6,
+    "todo": 2,
+    "in_progress": 1,
+    "waiting": 1,
+    "blocked": 1,
+    "done": 1
+  }
+}
