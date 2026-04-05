@@ -34,7 +34,7 @@ if [[ -z "$JIRA_CONFIG" ]]; then
 fi
 
 # Extract PROJECT_KEY from config
-PROJECT_KEY=$(grep -oP '(?<=\*\*Key:\*\* )\S+' "$JIRA_CONFIG" 2>/dev/null || true)
+PROJECT_KEY=$(grep -o '\*\*Key:\*\* [A-Z][A-Z0-9]*' "$JIRA_CONFIG" 2>/dev/null | sed 's/\*\*Key:\*\* //' || true)
 if [[ -z "$PROJECT_KEY" ]]; then
   err "Could not extract PROJECT_KEY from $JIRA_CONFIG"
   exit 1
