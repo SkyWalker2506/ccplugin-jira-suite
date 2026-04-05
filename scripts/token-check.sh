@@ -39,4 +39,4 @@ check_token_age() {
   return 0
 }
 
-export -f check_token_age 2>/dev/null || true
+# Functions are defined above; source this file to use them in subshells.

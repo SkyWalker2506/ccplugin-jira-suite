@@ -28,4 +28,4 @@ HEADER
   echo "| ${timestamp} | ${user} | ${operation} | ${details} |" >> "$AUDIT_FILE"
 }
 
-export -f audit_log 2>/dev/null || true
+# Functions are defined above; source this file to use them in subshells.

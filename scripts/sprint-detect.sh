@@ -71,5 +71,4 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
   detect_sprint "$PROJECT_KEY"
 fi
 
-# Export for sourcing in bash environments (no-op in zsh)
-export -f detect_sprint validate_project_key 2>/dev/null || true
+# Functions are defined above; source this file to use them in subshells.
