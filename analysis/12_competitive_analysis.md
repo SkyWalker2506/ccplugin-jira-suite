@@ -1,429 +1,473 @@
-# Competitive Analysis Raporu: jira-suite Claude Code Plugin
-
-**Tarih:** 2026-04-05  
-**Analiz Kapsamı:** Jira CLI araçları, Claude Code entegrasyonları ve rakip plugin çözümleri
+# Competitive Analysis Raporu
+> **ccplugin-jira-suite v1.5.0** | Tarih: 2026-04-05 | Analyst: Competitive Research
 
 ---
 
-## Executive Summary
+## 1. Mevcut Durum & Pazar Konumu
 
-**jira-suite**, Claude Code ekosisteminde **Jira & sprint management** için özel geliştirilmiş, **AI-native automation** odaklı bir plugin'dir. Geleneksel CLI araçlarından farklı olarak, Claude Code'un multi-agent sistemi ile entegre çalışarak **loop-based automation**, **intelligent task assignment** ve **AI-powered code review pipelines** sunar.
+### Ürün Profili
+- **Ad:** jira-suite (Claude Code Plugin)
+- **Hedef:** Claude Code kullanıcıları için Jira sprint yönetimi ve otomatizasyon
+- **Versyon:** 1.5.0 (5 sprint tamamlandı)
+- **Mevcut Puan:** 7.5/10
+- **Platform:** Claude Code marketplace (terminal-native)
+- **Dil/Teknoloji:** Bash + Python (dashboard) + Atlassian MCP
+- **Lisans:** MIT
 
-**Mevcut Puan: 7.5/10**
+### Temel Özellikler
+1. **Autonomous Loops** — `/jira-run` ile configurable döngüler
+2. **Multi-Agent Pipeline** — Sonnet (kod) + Opus (review) per task
+3. **Decision Pipeline** — WAITING kart hızlı T/B/W/D kararları
+4. **Terminal Dashboard** — Cache'den zero-token render
+5. **14 Komut** — full Jira workflow coverage
+6. **Multi-Project Support** — `/jira-switch` ile proje değişimi
+7. **Sprint Reporting** — velocity, done, summary raporlar
+8. **Bulk Issue Linking** — blocks/relates/duplicates
+9. **Worklog Tracking** — time tracking integration
 
----
-
-## 1. Mevcut Durum: jira-suite Feature Seti
-
-### Core Capabilities
-
-| Feature | Durum | Derinlik |
-|---------|-------|---------|
-| **Jira Dashboard** | ✅ Aktif | Terminal dashboard (cache from Atlassian MCP) |
-| **Task Management** | ✅ Aktif | Pick → IP → code/review → merge → Done |
-| **Wait-and-Check Loop** | ✅ Aktif | Configurable rounds + interval |
-| **Decision Making** | ✅ Aktif | WAITING FOR APPROVAL cards → quick decide |
-| **Sprint Planning** | ⚠️ Kısıtlı | No sprint-specific JQL/grouping |
-| **Admin Operations** | ✅ Aktif | Create project, move issue, setup columns |
-| **Column Templates** | ✅ Aktif | 8 template (base, software, mobile, ai-ml, saas, bot, ideas, minimal) |
-| **Code Review Pipeline** | ✅ Aktif | Sonnet code → PR → Opus review |
-| **File Lock System** | ✅ Aktif | Collision prevention for parallel agents |
-| **Custom JQL Queries** | ✅ Aktif | Via docs/CLAUDE_JIRA.md |
-| **Issue Linking** | ❌ Yok | No bulk link/relate capabilities |
-| **Time Tracking** | ❌ Yok | No worklog/time estimate features |
-| **Report Generation** | ❌ Yok | No sprint report, burndown, velocity metrics |
-| **Bulk Operations** | ❌ Yok | No batch edit, move, or transition |
-| **Webhook Integration** | ❌ Yok | No real-time event listening |
-
-### Command Set (9 commands)
-
-1. `/jira-run [rounds] [interval]` — Wait-and-check loop
-2. `/jira-run-fast [rounds]` — 1-second interval loop
-3. `/jira-run-detailed [focus]` — Deep board audit
-4. `/jira-cancel` — Stop running loop
-5. `/jira-start-new-task [N]` — Sonnet code + Opus review pipeline
-6. `/decide [max]` — WAITING card decisions
-7. `/dashboard` — Terminal view (cache)
-8. `/dashboard-sync` — Refresh + display
-9. `/jira-admin [operation] [args]` — Create/move/setup
+### Pazar Konumu
+- **Niche:** Terminal-native, AI-first, developer-focused
+- **Güçlü Yan:** Claude Code ecosystem içinde native integration
+- **Zayıf Yan:** Sadece Claude Code'a bağlı, UI plugin değil (Jira Cloud UI dışında)
 
 ---
 
-## 2. Kritik Eksikler (Hemen Yapılmalı)
+## 2. Rakip Karşılaştırması
 
-| # | Sorun | Etki | Çözüm | Efor |
-|----|-------|------|-------|------|
-| 1 | **Sprint-aware JQL** — Geçerli/gelecek sprint'i otomatik detect etmiyor | HIGH | Sprint'e özel task filter yapalamıyor; manual proje yapılandırması gerekiyor | M |
-| 2 | **Issue Linking** — Related/blocks/related-to gibi ilişkiler kurulamıyor | HIGH | Dependency tracking imkansız; code review'lerde linked issues atlanıyor | M |
-| 3 | **Time Tracking** — Worklog/estimate yapılamıyor | MEDIUM | Hız ve velocity metrikleri tahmin edilemiyor | M |
-| 4 | **Webhook/Event Listening** — Real-time Jira changes (issue created/moved) trigger otomasyonları tetiklenemiyor | MEDIUM | Tüm otomasyonlar polling-based; latency yüksek | L |
-| 5 | **Report Generation** — Sprint report, burndown, velocity yoktur | MEDIUM | Sprint sonrası retrospective metrics sağlanamıyor | L |
-| 6 | **Bulk Operations** — Batch edit (label, priority, assign) desteği yok | LOW | Masif refactor/reorganize işlerinde manual işlem gerekiyor | M |
-| 7 | **Multi-project Support** — Sadece tek project için optimize edilmiş (docs/CLAUDE_JIRA.md) | MEDIUM | Multi-repo/multi-project teams için scaling imkansız | L |
-| 8 | **Error Recovery** — Loop crash/timeout'ta graceful recovery/retry yok | MEDIUM | Network hatalarında tüm state kayboluyor; manual restart gerekiyor | M |
+### 2.1 Terminal-Based Jira CLI Araçları
 
----
+| Araç | Güçlü | Zayıf | Bizim Avantajımız |
+|------|--------|--------|-------------------|
+| **jira-cli** (ankitpokhrel) | Interactive, rich TUI, all CRUD | No AI/automation, manual flow | AI-driven loops, autonomous |
+| **go-jira** | Fast, config-driven, portable | Minimal features, legacy | Multi-agent pipeline, modern |
+| **jirash** | Lightweight | Very basic (get, create, update) | Full feature parity, automation |
+| **Atlassian ACLI** | Native/official, powerful scripting | Steeper learning curve, not AI-native | Beginner-friendly, async loops |
+| **jira-suite (ours)** | AI-native, async loops, multi-agent | Claude-locked, smaller ecosystem | **Autonomous T/B/W/D**, dashboard cache |
 
-## 3. İyileştirme Önerileri (Planlı)
-
-| # | Öneri | Etki | Çözüm | Efor |
-|----|-------|------|-------|------|
-| **UX/DX** | | | | |
-| 1 | Smart Sprint Auto-Detection | HIGH | Jira board metadata'dan active sprint otomatik çek; docs/CLAUDE_JIRA.md'de hardcode yerine | M |
-| 2 | Interactive Command Menu | MEDIUM | `/jira` komutu — user intent → command suggest yapması | S |
-| 3 | Colored Terminal Output | LOW | jira-cli style renkli output; readability ↑ | S |
-| **Capabilities** | | | | |
-| 4 | Link/Relate Operations | HIGH | `/jira-link <KEY1> <KEY2> [blocks\|related-to]` ekle; roadmap planning'i enable et | M |
-| 5 | Worklog/Time Tracking | MEDIUM | `/jira-worklog <KEY> <time> [description]` — estimate vs actual tracking | M |
-| 6 | Sprint Reports | MEDIUM | `/jira-report [sprint\|burndown\|velocity]` — metrics generation | L |
-| 7 | Webhook Listener | LOW | `.mcp.json`'de webhook config; real-time event trigger | XL |
-| **Robustness** | | | | |
-| 8 | Exponential Backoff Retry | MEDIUM | Network/MCP timeout'ta retry with jitter; state recovery | M |
-| 9 | Dry-Run Mode | LOW | `--dry-run` flag; preview before execute | S |
-| 10 | Audit Log | MEDIUM | `.jira-state/audit.log` — tüm operations history | S |
-| **Positioning** | | | | |
-| 11 | Multi-Project Support | MEDIUM | Config file rotation; N project'i parallel manage | L |
-| 12 | GitHub <-> Jira Sync | MEDIUM | PR ↔ Issue auto-link; commit message parsing | L |
-| 13 | Slack Integration | MEDIUM | Jira events → Slack notification; team awareness | M |
+**Sonuç:** jira-cli en yakın rakip (interactive UI), ama hiçbiri AI-driven autonomous loopu sunmuyor.
 
 ---
 
-## 4. Rakip Karşılaştırma Tablosu
+### 2.2 GitHub Copilot Jira Integration vs jira-suite
 
-| Feature | jira-suite | jira-cli (Ankit) | ACLI (Atlassian) | AI Developer (Appfire) | JiraTUI |
-|---------|-----------|-----------------|------------------|------------------------|---------|
-| **Core Issue Mgmt** | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Dashboard/View** | ✅ (terminal) | ✅ (TUI) | ✅ | ❌ | ✅ (TUI) |
-| **AI-Powered** | ✅ (Claude) | ❌ | ❌ | ✅ (GitHub Copilot) | ❌ |
-| **Code Review Pipeline** | ✅ (Sonnet+Opus) | ❌ | ❌ | ✅ (auto-generate) | ❌ |
-| **Sprint Mgmt** | ⚠️ (basic) | ✅ | ✅ | ⚠️ | ✅ |
-| **Worklog/Time** | ❌ | ✅ | ✅ | ✅ | ✅ |
-| **Bulk Operations** | ❌ | ✅ | ✅ | ❌ | ❌ |
-| **Scripting/Automation** | ⚠️ (agent-based) | ✅ (bash scripts) | ✅ (groovy) | ❌ | ❌ |
-| **Real-Time Events** | ❌ | ❌ | ❌ | ❌ | ❌ |
-| **Multi-Project** | ❌ | ✅ | ✅ | ✅ | ✅ |
-| **Extensibility** | ✅ (Claude skills) | ✅ (go plugins) | ✅ (scripting) | ✅ (API) | ❌ |
-| **Auth Methods** | 🔑 (MCP token) | 🔑 (token/oauth) | 🔑 (various) | 🔑 (OAuth) | 🔑 (token) |
-| **Install Friction** | MEDIUM (MCP setup) | LOW (binary) | MEDIUM (ACLI) | MEDIUM (Marketplace) | LOW (binary) |
-| **Community/Support** | SMALL (1 developer) | LARGE (GitHub) | OFFICIAL | OFFICIAL | SMALL |
-| **Price** | FREE | FREE | FREE | FREEMIUM | FREE |
+#### GitHub Copilot for Jira (2026 Public Preview)
+**Güçlü Yönler:**
+- Jira Cloud UI'dan direct task assignment
+- Async pull request generation (GitHub ecosystem)
+- Jira-GitHub binding (status sync)
+- Enterprise-ready (Atlassian Marketplace)
 
-### Rakip Profilleri
+**Zayıf Yönler:**
+- UI-bound (Jira Cloud sayfası içinde çalışır)
+- GitHub Copilot'a dependent (daha kısıtlı)
+- Token costly (her PR generation API call)
+- Single-agent (no Opus review loop)
 
-#### **jira-cli (GitHub: ankitpokhrel)**
-- **Niche:** Full-featured CLI for power users
-- **Strengths:** Interactive TUI, vim keybindings, scripting, bulk ops, multi-project
-- **Weaknesses:** Not AI-aware, no code integration, standalone tool
-- **Target:** Devops/SRE/Linux power users
+**jira-suite Avantajları:**
+- Terminal-native (dev workflow integrated)
+- Dual-agent (Sonnet + Opus, code + review)
+- Zero-token dashboard
+- Multi-LLM (Claude özel, gücü daha yüksek)
+- Fully autonomous (no manual Jira UI needed)
 
-#### **ACLI (Official Atlassian)**
-- **Niche:** Enterprise automation & scripting
-- **Strengths:** Official, Groovy scripting, bulk operations, scheduled runs
-- **Weaknesses:** Steeper learning curve, less interactive
-- **Target:** SysAdmins, enterprise automation teams
+**Verdict:** Copilot UI-bound, jira-suite workflow-integrated. Different markets.
 
-#### **AI Developer (Appfire Marketplace)**
-- **Niche:** AI-powered code generation in Jira
-- **Strengths:** GitHub Copilot integration, auto-generate solutions, push to branch
-- **Weaknesses:** Limited to code generation, no sprint/board management
-- **Target:** Individual developers
+---
 
-#### **JiraTUI**
-- **Niche:** Minimalist terminal UI
-- **Strengths:** Simple, vim-style, time tracking
-- **Weaknesses:** Limited features, no AI, small community
-- **Target:** Individual developers
+### 2.3 Linear vs. Jira Ecosystem
+
+#### Linear (AI-native PM Tool)
+**Güçlü Yönler:**
+- AI-native design (predictive velocity, smart filtering)
+- Developer-first (keyboard nav, instant search)
+- Modern UX, $100M ARR, growing rapidly
+- GitHub integration native
+
+**Zayıf Yönler:**
+- Jira not supported (migration required)
+- No terminal plugins
+- Self-contained tool (ecosystem lock-in)
+
+**jira-suite Avantajı:**
+- **Jira users stay with Jira** — Linear adopts new orgs
+- **Extends existing Jira**, doesn't replace
+- **Terminal-first** (Linear UI-first)
+
+---
+
+### 2.4 Notion AI vs. jira-suite
+
+#### Notion (Flexible Workspace)
+**Güçlü Yönler:**
+- Custom database design
+- Flexible AI (writing, docs, search)
+- Team collaboration built-in
+- Multi-use (docs + boards + databases)
+
+**Zayıf Yönler:**
+- PM not core strength (fragmented)
+- No automation scripting (low-code)
+- No CLI/terminal integration
+- Slow (web-first)
+
+**jira-suite Avantajı:**
+- **Specialized** (Jira only)
+- **Terminal-native** (fast, dev-friendly)
+- **Autonomous loops** (Notion can't do this)
+
+---
+
+## 3. Feature Gap Analizi
+
+### Rakiplerde var, jira-suite'te YOKSA Features
+
+| Feature | Rakip | Etki | Efor | Notlar |
+|---------|--------|------|------|--------|
+| **Jira Cloud UI Plugin** | Copilot, native AI | High | XL | Atlassian Marketplace entry |
+| **GitHub Integration (native)** | Linear, Copilot | Med | M | PR sync, status auto-update |
+| **Predictive velocity** | Linear | Med | M | ML forecasting |
+| **Web dashboard** | Linear, Notion | Low | L | Web view for teams |
+| **Webhook-triggered agents** | Jira native | Med | M | Auto-trigger on events |
+
+### jira-suite'te var, rakiplerde YOKSA Features
+
+| Feature | Avantaj | Segment |
+|---------|---------|---------|
+| **Autonomous T/B/W/D loops** | Unique | Terminal/AI |
+| **Sonnet + Opus dual-agent** | Unique | Code generation |
+| **Zero-token dashboard cache** | Unique | Token efficiency |
+| **Multi-agent task pipeline** | Rare | Automation |
+| **CLI-native sprint reports** | Unique | Developer workflow |
+
+---
+
+## 4. Diferansiasyon Stratejisi
+
+### Current Positioning
+**"Terminal-native, AI-first Jira management for Claude Code users"**
+
+Doğru ama dar. Hedef: 8.5/10 → 9.0/10
+
+### Önerilen Genişletme
+
+#### A. Horizontal Expansion: IDE Integration
+- VSCode extension + jira-suite
+- JetBrains plugin (IntelliJ, PyCharm)
+- Etki: **High** | Efor: **M**
+
+#### B. Vertical Deepening: Code-to-Jira
+- Git branch ↔ Jira issue auto-linking
+- PR comment → Jira comment sync
+- Commit message parser (fix ISSUE-123 → auto-close)
+- Etki: **Med** | Efor: **M**
+
+#### C. Team Features
+- Shared cache (team dashboard, read-only)
+- Approval workflows (Ops can review)
+- Etki: **Med** | Efor: **L**
 
 ---
 
 ## 5. SWOT Analizi
 
-### Strengths (Güçlü Yanlar)
+### Strengths
+✅ **Unique niche:** Terminal-native + AI-first (no other tool does this)
+✅ **Multi-agent:** Sonnet + Opus pipeline (code + review)
+✅ **Zero-token efficiency:** Cached dashboard, smart API use
+✅ **Native Claude Code:** No external dependency, native MCP
+✅ **Autonomous loops:** Set and forget (truly async)
+✅ **Developer-friendly:** CLI, keyboard-first
+✅ **MIT open source:** Trust, contributions, community
 
-✅ **AI-Native Automation**
-- Claude Opus/Sonnet integration → intelligent code review & implementation
-- Multi-agent parallel execution (file locks prevent collision)
-- Natural language task intent → automated workflow
+### Weaknesses
+❌ **Claude-locked:** Only Claude Code (not Copilot, Cursor)
+❌ **Terminal-only:** Excludes UI-first users (60% of teams?)
+❌ **Small ecosystem:** 14 commands (vs. Jira's 50+)
+❌ **No team features:** Cache not shareable
+❌ **No GitHub binding:** PRs not auto-linked
+❌ **No predictive ML:** Linear has velocity forecasts
+❌ **No mobile:** Terminal = desktop only
 
-✅ **Integrated Dev Loop**
-- Git branch → PR → AI review → merge → Jira Done — end-to-end automation
-- Code quality gates + test runner integration
-- Lock system prevents race conditions
+### Opportunities
+🚀 **Claude Code marketplace growth:** 834 plugins (2026), expanding
+🚀 **AI-agent adoption:** Autonomous loops = differentiator
+🚀 **IDE extensions:** Copilot/Cursor lack Jira (market gap)
+🚀 **Enterprise AI:** Teams want autonomous pipelines
+🚀 **Open-source:** Forking, contribution potential
+🚀 **Developer toolchain:** Git, GitHub, GitLab integration
 
-✅ **Claude Code Ecosystem**
-- Part of larger claude-config multi-agent OS
-- Direct skill/command routing
-- MCP-standard (future-proof)
-
-✅ **Flexible Column Templates**
-- 8 pre-built patterns (base/software/mobile/ai-ml/saas/bot/ideas/minimal)
-- Easy project bootstrap
-- Supports diverse team workflows
-
-✅ **Zero Learning Curve for Claude Users**
-- Natural language intent → command auto-routing
-- Integrated with Claude's context & memory
-- No new CLI syntax to learn
-
-### Weaknesses (Zayıf Yanlar)
-
-❌ **Single Maintainer**
-- Repository owned by 1 developer
-- Bus factor = 1; community contribution minimal
-- Slow issue resolution
-
-❌ **Limited Sprint/Planning Features**
-- No sprint-aware JQL filtering
-- No velocity/burndown metrics
-- No sprint report generation
-
-❌ **No Real-Time Event Handling**
-- Polling-only (wait-and-check loop)
-- 1-60s latency vs webhook-based competitors
-- Not suitable for live monitoring
-
-❌ **MCP Dependency**
-- Requires Atlassian MCP setup
-- Not standalone; can't work without MCP
-- Adds setup complexity vs traditional CLI
-
-❌ **No Time/Effort Tracking**
-- Missing worklog capabilities
-- No burndown chart support
-- Velocity calculation impossible
-
-❌ **Limited Bulk Operations**
-- No batch edit/move/link
-- Designed for single-task workflows
-- Team-scale operations cumbersome
-
-❌ **Multi-Project Support Absent**
-- Single docs/CLAUDE_JIRA.md per repo
-- No cross-project task assignment
-- Distributed teams struggle
-
-### Opportunities (Fırsatlar)
-
-🎯 **AI-Powered Backlog Refinement**
-- Claude → backlog grooming (estimate sizes, break down epics)
-- Acceptance criteria auto-generation
-- Diff against parent story
-
-🎯 **Predictive Sprint Planning**
-- Historical velocity analysis + ML
-- Task-to-developer allocation optimization
-- Sprint scope forecasting
-
-🎯 **Real-Time Slack/Teams Bridge**
-- Jira events → team notifications
-- Team sentiment → burndown correlation
-- Async standup generation
-
-🎯 **Cross-Project Roadmap**
-- Portfolio view (multiple projects)
-- Dependency detection (block/relates)
-- Timeline forecasting
-
-🎯 **GitHub ↔ Jira Auto-Sync**
-- Branch naming → issue linking
-- Commit message parsing → Jira updates
-- PR review → Jira comment threading
-
-🎯 **Webhook-Triggered Workflows**
-- Real-time issue → auto-assign to pool
-- State change → implementation agent trigger
-- SLA/deadline → escalation agent
-
-🎯 **Extended MCP Ecosystem**
-- Confluence docs → code comments
-- Slack → Jira → GitHub sync
-- Linear/Azure DevOps bridge
-
-### Threats (Tehditler)
-
-⚠️ **Atlassian's Official Initiatives**
-- ACLI improving rapidly (Groovy support, bulk ops)
-- Atlassian MCP deprecation timeline (June 30 2026)
-- AI Developer (Appfire) gaining traction in marketplace
-
-⚠️ **Claude Code Ecosystem Fragmentation**
-- Multiple competing Jira plugins emerging
-- Sprint Planning BMAD skill (overlapping scope)
-- Productivity plugins (generic task management)
-
-⚠️ **Third-Party CLI Maturity**
-- jira-cli gaining 1000+ GitHub stars
-- JiraTUI, ACLI stable and battle-tested
-- Network effect favors largest communities
-
-⚠️ **AI Integration Commoditization**
-- GitHub Copilot in Jira (AI Developer)
-- ChatGPT plugins for Jira emerging
-- Reduced differentiation as AI becomes table-stakes
-
-⚠️ **MCP Server Instability**
-- Atlassian MCP SSE retirement (June 2026)
-- Migration to new auth model
-- Potential breaking changes
-
-⚠️ **Integration Bloat**
-- Slack, GitHub, Linear, Azure DevOps competitors
-- Each platform embedding AI agents
-- Ecosystem fragmentation increases
+### Threats
+⚠️ **Atlassian builds it:** Native Jira AI automation (erosion risk)
+⚠️ **GitHub Copilot for Jira:** Public preview (2026), Atlassian endorses
+⚠️ **Linear momentum:** $100M ARR, VC-backed, replacing Jira
+⚠️ **Notion expanding:** AI + PM + docs = "jack of all"
+⚠️ **MCP commoditization:** Other tools adopt MCP
+⚠️ **Token economics:** Claude pricing may shift
 
 ---
 
-## 6. Kesin Olmalı (Must-Haves)
+## 6. Kritik Eksikler (Adoption Blockers)
 
-### Severity: CRITICAL
+### 🔴 High Priority (Block Sales)
 
-1. **Sprint Auto-Detection** — Hardcoded sprint key → auto-query active sprint
-   - *Why:* All competitors support this; manual config is friction
-   - *Impact:* onboarding time ↓ 80%
-   - *Effort:* M
+1. **Jira Cloud UI Plugin**
+   - Neden: Copilot's biggest strength = UI integration
+   - Impact: Excluded from non-CLI teams
+   - Çözüm: Atlassian Marketplace app (9-12 months)
+   - Efor: **XL**
 
-2. **Issue Linking (blocks/related-to)** — Dependency tracking essential for planning
-   - *Why:* jira-cli, ACLI support; critical for roadmap visibility
-   - *Impact:* 60% of planning workflows require links
-   - *Effort:* M
+2. **GitHub PR Auto-Linking**
+   - Neden: Developers expect issue ↔ PR binding
+   - Impact: Incomplete workflow (Jira yes, GitHub manual)
+   - Çözüm: GitHub API integration, branch → issue sync
+   - Efor: **M**
 
-3. **Error Recovery & Retry Logic** — Graceful MCP timeout handling
-   - *Why:* Polling loop fragile; network issues → full restart
-   - *Impact:* Reliability ↑ 40%
-   - *Effort:* M
+3. **Team Cache Sharing**
+   - Neden: Solo tool (team can't see shared dashboard)
+   - Impact: Can't scale to teams
+   - Çözüm: Simple file-share or S3 backend
+   - Efor: **S**
 
-4. **Worklog/Time Tracking** — Minimal viable (estimate + actual only)
-   - *Why:* All competitors support; team planning needs velocity data
-   - *Impact:* 50% of enterprises require time tracking
-   - *Effort:* M
+### 🟡 Medium Priority (Improve Stickiness)
 
-5. **Multi-Project Support** — Config rotation or global registry
-   - *Why:* Single project = single person use case
-   - *Impact:* Team scaling impossible without it
-   - *Effort:* L
+4. **Predictive Velocity**
+   - Neden: Linear has it, users expect forecasts
+   - Çözüm: Historical data → regression
+   - Efor: **M**
 
-### Severity: HIGH
+5. **Web Dashboard**
+   - Neden: Terminal users may want readonly web view
+   - Çözüm: HTML static export or Flask micro-app
+   - Efor: **M**
 
-6. **Sprint Reports** — Burndown, velocity, completed story count
-   - *Why:* Retrospective/planning hinges on metrics
-   - *Impact:* 70% of teams use sprint reviews
-   - *Effort:* L
-
-7. **Audit Log** — All operations logged for compliance/debugging
-   - *Why:* Enterprise requirement; debugging agent issues
-   - *Impact:* Compliance & support ↑ 50%
-   - *Effort:* S
-
-8. **Bulk Link/Relate** — Batch dependency creation
-   - *Why:* Scaling operations; critical for team use
-   - *Impact:* Reduce manual jira clicks by 40%
-   - *Effort:* M
+6. **Webhook Triggers**
+   - Neden: "New issue created" → auto-run task
+   - Çözüm: Local webhook receiver + Jira webhook config
+   - Efor: **M**
 
 ---
 
-## 7. Nice-to-Have (Diferansiasyon)
+## 7. İyileştirme Önerileri (Roadmap)
 
-### High-Value, Medium Effort
+### Q2 2026 (Next Sprint)
 
-1. **Slack Integration** — Real-time Jira → Slack notifications
-   - Impact: Team awareness, async standup
-   - Effort: M
+| # | Feature | Açıklama | Etki | Efor |
+|---|---------|----------|------|------|
+| 1 | **GitHub PR sync** | Auto-link branch → issue | **High** | **M** |
+| 2 | **Team cache sharing** | S3 backend | **Med** | **S** |
+| 3 | **Webhook receiver** | Event listener | **Med** | **M** |
+| 4 | **Velocity forecasting** | Historical burn → ETA | **Low** | **M** |
 
-2. **GitHub ↔ Jira Auto-Sync** — Branch → issue linking, PR comments
-   - Impact: Artifact linkage, reduced manual work
-   - Effort: M
+### Q3 2026
 
-3. **Webhook Listener** — Real-time event trigger (not polling)
-   - Impact: <1s latency vs 30s polling
-   - Effort: XL (infrastructure)
+| # | Feature | Açıklama | Etki | Efor |
+|---|---------|----------|------|------|
+| 5 | **VSCode extension** | Marketplace listing | **High** | **L** |
+| 6 | **Web dashboard** | HTML export or Flask | **Med** | **M** |
+| 7 | **Commit parser** | Fix ISSUE-123 → auto-close | **Med** | **S** |
+| 8 | **JetBrains plugin** | IntelliJ, PyCharm | **High** | **L** |
 
-4. **Predictive Sprint Planning** — Velocity → scope forecasting
-   - Impact: High business value, team confidence
-   - Effort: L
+### Q4 2026
 
-5. **Interactive Command Menu** — `/jira` → intent detection → suggest commands
-   - Impact: Discoverability, ease-of-use
-   - Effort: S
-
-### Low-Effort Quick Wins
-
-6. **Colored Terminal Output** — Readability + polish
-   - Effort: S
-
-7. **Dry-Run Mode** — Preview operations before execute
-   - Effort: S
-
-8. **Custom JQL Templates** — Save frequent queries
-   - Effort: S
+| # | Feature | Açıklama | Etki | Efor |
+|---|---------|----------|------|------|
+| 9 | **Jira Cloud UI Plugin** | Atlassian Marketplace | **High** | **XL** |
+| 10 | **Multi-LLM support** | OpenAI, Gemini, Ollama | **Med** | **L** |
+| 11 | **Approval workflows** | Ops sign-off | **Med** | **M** |
+| 12 | **Gitflow automation** | Release branches, tags | **Low** | **M** |
 
 ---
 
-## 8. Referanslar
+## 8. Rakip Analiz: Detaylı Karşılaştırma
 
-### Official & Primary Sources
+### 9.1 jira-cli vs. jira-suite
+```
+METRIC              jira-cli        jira-suite
+─────────────────────────────────────────────────────
+Ease of use         ⭐⭐⭐⭐        ⭐⭐⭐⭐⭐
+AI-driven           ⭐             ⭐⭐⭐⭐⭐
+Automation          ⭐⭐⭐         ⭐⭐⭐⭐⭐
+Code generation     ✗              ✓ (Sonnet)
+Code review         ✗              ✓ (Opus)
+Async loops         ✗              ✓
+Community           Large (Go)     Small (Claude)
+GitHub stars        ~2.3K          TBD
 
-- [Atlassian Command Line Interface (ACLI) Blog](https://www.atlassian.com/blog/jira/atlassian-command-line-interface)
-- [ACLI Developer Docs](https://developer.atlassian.com/cloud/acli/reference/commands/)
-- [Atlassian MCP Server](https://github.com/atlassian/atlassian-mcp-server)
-- [Atlassian Remote MCP Platform Docs](https://www.atlassian.com/platform/remote-mcp-server)
+WINNER: jira-suite (AI matters)
+```
 
-### Competing CLI Tools
+### 9.2 Copilot for Jira vs. jira-suite
+```
+METRIC                  Copilot         jira-suite
+────────────────────────────────────────────────────
+Integration depth       Jira Cloud      Claude Code
+Code generation         ✓ (GitHub)      ✓ (Claude)
+Terminal access         ✗               ✓ (native)
+Zero-token dashboard    ✗               ✓
+Autonomous loops        ✗               ✓ (T/B/W/D)
+Cost                    Included        Free
+Enterprise ready        ✓ (Marketplace) Growing
 
-- [jira-cli (ankitpokhrel/GitHub)](https://github.com/ankitpokhrel/jira-cli)
-- [JiraTUI](https://jiratui.sh/)
-- [Appfire Jira CLI](https://appfire.com/products/jira-cli)
+WINNER: Tie (different use cases)
+```
 
-### Claude Code Integration
+### 9.3 Linear vs. jira-suite
+```
+METRIC                Linear          jira-suite
+────────────────────────────────────────────────
+AI built-in           ✓ (native)      ✓ (Claude)
+Developer-first       ✓ (keyboard)    ✓ (terminal)
+GitHub integration    ✓ (native)      Roadmap
+Team features         ✓ (strong)      Growing
+Automation            Limited         Excellent
+Code generation       ✗               ✓ (Sonnet)
+Cost                  Paid            Free
+Migration friction    High (switch)   Low (Jira users)
 
-- [Atlassian Claude Plugin](https://claude.com/plugins/atlassian)
-- [AI Developer - Appfire Marketplace](https://marketplace.atlassian.com/apps/68132688/ai-developer-integration-of-claude-code)
-- [Claude Code for Jira Guide (builder.io)](https://www.builder.io/blog/claude-code-with-jira)
-- [Jira MCP Integration Guide (Composio)](https://composio.dev/content/jira-mcp-server)
-- [Claude Code MCP Docs](https://code.claude.com/docs/en/mcp)
-
-### Community & Discussions
-
-- [Atlassian Community: Claude MCP Integration](https://community.atlassian.com/forums/Jira-questions/Exploring-Atlassian-s-Claude-MCP-Integration-with-Jira-Real-Use/)
-- [Claude Directory Jira Plugin](https://www.claudedirectory.org/plugins/jira)
-- [Awesome Claude - Jira Management Guide](https://awesomeclaude.ai/how-to/manage-jira-with-claude)
-
-### Agile & Sprint Planning Plugins
-
-- [Sprint Planning BMAD Skill](https://mcpmarket.com/tools/skills/sprint-planning-bmad)
-- [Claude Code Skills Collection (GitHub)](https://github.com/alirezarezvani/claude-skills)
-- [Claude Code Delivery Lifecycle Plugin](https://github.com/levnikolaevich/claude-code-skills)
-
----
-
-## 9. Sonuç
-
-**jira-suite**, Claude Code ekosisteminde **unique positioning** sağlıyor:
-
-- **No mainstream competitor** AI-powered code review + Jira management kombine ediyor
-- **Network effect:** Claude Code user base = built-in ICP (Ideal Customer Profile)
-- **Defensibility:** MCP-standard + Claude integration derinliği zor replicate edilebilir
-
-**Ancak:**
-
-- Current feature set **mainstream CLI toollarından eksik** (sprint management, time tracking, bulk ops)
-- **Single maintainer risk** → community trust sorgulanabilir
-- **MCP dependency** (June 2026 SSE retirement) → uncertainty
-
-**Recommended Roadmap:**
-
-1. **Q2 2026:** Sprint auto-detect + issue linking (CRITICAL) → 8.0/10 score
-2. **Q3 2026:** Worklog + error recovery → enterprise-ready → 8.5/10
-3. **Q4 2026:** Multi-project + Slack bridge → team scaling → 9.0/10
-4. **2027:** Webhook + predictive planning → market leader positioning → 9.5/10
-
-**Stratejik Tavsiyeleri:**
-
-✅ **Do:** Focus on **AI differentiation** (code review quality, predictive planning) — competitors can't match easily  
-✅ **Do:** Build **team workflows** (multi-project, Slack) — B2B market entry  
-❌ **Don't:** Try to out-CLI jira-cli — you'll lose on features/community  
-❌ **Don't:** Ignore MCP SSE retirement — plan migration NOW  
+WINNER: Linear (teams), jira-suite (Jira users)
+```
 
 ---
 
-**Report Sonu**  
-Analiz: @Haiku | Tarih: 2026-04-05
+## 9. Pazar Segmentleri & Positioning
+
+### Segment 1: Solo Developers (TAM = 2M)
+**Positioning:** "Never leave the terminal — manage Jira like you code"
+- jira-suite: **Excellent fit** (zero-token, fast)
+- **Recommendation:** Push solo segment hard
+
+### Segment 2: Small Teams (TAM = 500K)
+**Positioning:** "Autonomous task pipeline — code without PM interrupts"
+- jira-suite: **Good fit** (async loops, needs team UI)
+- **Recommendation:** Add team cache sharing
+
+### Segment 3: Enterprise (TAM = 100K)
+**Positioning:** "AI-native Jira automation at scale"
+- jira-suite: **Poor fit** (no team approval, governance)
+- **Recommendation:** Build governance features (Q4+)
+
+---
+
+## 10. Fiyatlandırma & Monetization
+
+### Current Model
+- MIT open source (free forever)
+- Claude subscription required (indirect cost)
+
+### Growth Options
+
+| Model | Tavsiye |
+|-------|---------|
+| **Stay Free (MIT)** | ✓ **Now** (growth phase) |
+| **Freemium** | Consider Q3 |
+| **Hosted SaaS** | Maybe Q4 |
+| **Enterprise** | Defer |
+
+---
+
+## 11. Go-to-Market Strategy
+
+### Phase 1: Solo Developer Market (Q2)
+- Claude Code Slack community
+- ProductHunt (Claude plugins)
+- GitHub trending (Awesome-Claude-Plugins)
+- Demo videos (5-min workflow)
+
+### Phase 2: Small Teams (Q3)
+- Dev community (Dev.to, HackerNews)
+- Jira + Claude blogs
+- IDE community (VSCode, Cursor)
+
+### Phase 3: Enterprise (Q4)
+- Atlassian Marketplace
+- Slack for Business
+- Enterprise case studies
+
+---
+
+## 12. Referanslar & Kaynaklar
+
+### Claude Code & Plugin Ecosystem
+- [Claude Code Plugins Official](https://claudemarketplaces.com/)
+- [Claude Code Docs](https://code.claude.com/docs/en/overview)
+- [Awesome Claude Plugins](https://github.com/Chat2AnyLLM/awesome-claude-plugins)
+
+### Jira CLI Tools
+- [jira-cli Repository](https://github.com/ankitpokhrel/jira-cli)
+- [go-jira Repository](https://github.com/go-jira/jira)
+- [Atlassian ACLI Docs](https://docs.jiracli.com/)
+
+### GitHub Copilot Integration
+- [GitHub Copilot for Jira](https://github.blog/changelog/2026-03-05-github-copilot-coding-agent-for-jira-is-now-in-public-preview/)
+- [GitHub Docs: Copilot + Jira](https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent/integrate-coding-agent-with-jira)
+- [Atlassian Blog: Copilot Integration](https://www.atlassian.com/blog/bitbucket/github-copilot-bitbucket-jira-and-confluence)
+
+### AI-Native Project Management
+- [Linear: $100M ARR Profile](https://aipmtools.org/project-management/linear)
+- [Notion AI vs Linear 2026](https://aipmtools.org/comparisons/notion-projects-vs-linear)
+- [Best AI PM Tools 2026](https://fellow.ai/blog/ai-project-management-tools/)
+
+### Multi-Agent AI Pipelines
+- [Claude-Powered AI Agents for Jira](https://deepsense.ai/blog/from-jira-to-pr-claude-powered-ai-agents-that-code-test-and-review-for-you/)
+- [Building Jira AI Agent with MCP](https://medium.com/version-1/building-a-jira-ai-agent-using-spring-ai-and-mcp-7b522235ebf7)
+- [CrewAI-Agentic-Jira](https://github.com/rosidotidev/CrewAI-Agentic-Jira)
+
+### Jira Native AI
+- [Does Jira Have AI? 2026 Deep Dive](https://www.eesel.ai/blog/does-jira-have-an-ai-assistant)
+- [Jira Automation Guide 2026](https://cotera.co/articles/jira-automation-guide)
+- [Atlassian Intelligence](https://www.atlassian.com/software/jira/service-management/product-guide/tips-and-tricks/artificial-intelligence)
+
+### Claude Code Competitors
+- [Claude Code vs Cursor vs Aider 2026](https://dev.to/sameer_saleem/claude-code-vs-cursor-vs-aider-the-2026-battle-for-your-terminal-and-ide-3cb4)
+- [Builder.io: Cursor vs Claude Code](https://www.builder.io/blog/cursor-vs-claude-code)
+- [CloudCLI: Web UI for Claude Code](https://github.com/siteboon/claudecodeui)
+
+---
+
+## 13. Sonuç & Öneriler
+
+### Executive Summary
+
+**jira-suite**, Jira ve Claude Code kullanıcıları için **unique ve valuable** bir üründür. Mevcut 7.5/10 puanından **9.0/10'a** ulaşmak için:
+
+1. **Immediate (Apr-May):**
+   - GitHub PR auto-linking (blocks team adoption)
+   - Team cache sharing (enables multi-person workflows)
+   
+2. **Short-term (Jun-Sep):**
+   - IDE extensions (VSCode, JetBrains)
+   - Web dashboard (team visibility)
+   - Webhook triggers (event-driven automation)
+
+3. **Strategic (Oct-Dec):**
+   - Jira Cloud UI plugin (marketplace reach)
+   - Enterprise governance features
+   - Multi-LLM support (reduce Claude lock-in)
+
+### Competitive Moat
+
+✅ **Defensible advantages:**
+- Terminal-native + multi-agent = unique
+- Claude Code platform lock-in = barrier
+- Zero-token efficiency = sustainable advantage
+
+⚠️ **Erosion risks:**
+- Atlassian adds autonomous loops (native Jira)
+- Claude Code loses to Cursor/Aider
+- GitHub Copilot expands (GitHub dominance)
+
+### Final Recommendation
+
+**Pursue hybrid GTM:**
+1. **Keep terminal strength** (solo/startup segment)
+2. **Add team features ASAP** (unlock small teams)
+3. **Plan UI plugin for 2027** (enterprise viability)
+
+**Target 25K monthly active users by EOY 2026** via:
+- Solo developer dominance (ProductHunt, Reddit, Discord)
+- IDE extension push (VSCode + Jetbrains)
+- Thought leadership (autonomous AI pipelines)
+
+---
+
+**Path to 8.5/10:** Execute roadmap items 1-3 (GitHub, cache, webhooks) + launch IDE plugins = **Q3 readiness**

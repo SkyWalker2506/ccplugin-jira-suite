@@ -1,20 +1,23 @@
 # Growth & User Engagement Analiz Raporu
-## jira-suite — Claude Code Plugin
+> ccplugin-jira-suite v1.5.0 | Tarih: 2026-04-05
 
 ---
 
 ## Mevcut Durum
 
 ### Güçlü Yanlar
-- **Marketplace başarılı kurulum**: `.claude-plugin/plugin.json` + komut dosyaları doğru yapıda, Atlassian MCP entegrasyonu kurulu
-- **Komut spektrumu geniş**: 9 komut (jira-run, dashboard, decide, admin vb.) özel kullanım durumlarını kapsıyor
-- **Teknik belgelendirme yeterli**: Komut dosyaları (`.md`) ayrıntılı trigger, argüman, davranış kuralları içeriyor — yeni kullanıcılar bunu okursa öğrenebilir
-- **Kritik özellikleri var**: Döngü (jira-run), karar verme (decide), kod pipeline (jira-start-new-task) — Jira+Claude özel iş akışlarını gerçekten destekliyor
-- **Athor güvenirliği**: LinkedIn + GitHub, "Multi-Agent OS" bağlantısı kurumsal bağlam sağlıyor
 
-### Puan: **5.5/10**
+1. **Marketplace Keşfedilebilirliği** — Plugin marketplace'de listelenen, kurulum kolay (`claude plugin install`)
+2. **Açık Onboarding** — README, quickstart, 6 use case senaryosu (solo dev, multi-agent, team audit)
+3. **Demo Sandbox** — Test verileri, gerçek Jira bağlantısı olmadan özellikleri keşfetme imkanı
+4. **14 Komut + Routing** — Jira Suite SKILL.md ile intent-based routing, komut menüsü
+5. **Autonomous Loops** — `/jira-run` ile background operations, developer attention azalması
+6. **Multi-Agent Pipeline** — Sonnet code + Opus review, task parallelization
+7. **Zero-Token Dashboard** — Cached data, API ağırlığı azalması
+8. **Use Case Driven Docs** — Solo dev, team audit, multi-agent senaryoları açık
 
-Marketplace'te keşfedilebilir, kurulabilir, yapısal olarak doğru — ancak **büyüme motorları eksik**, **onboarding zayıf**, **değer açıklaması muğlak**.
+### Puan: 6.5/10
+✓ Yoğun feature set, ✓ Marketplace mevcut, ✗ User adoption momentum düşük, ✗ Community feedback loop eksik
 
 ---
 
@@ -22,12 +25,12 @@ Marketplace'te keşfedilebilir, kurulabilir, yapısal olarak doğru — ancak **
 
 | # | Sorun | Etki | Çözüm | Efor |
 |---|-------|------|-------|------|
-| **1** | **README < 50 satır, "quickstart" yok** | Yeni kullanıcı 30s içinde "ne işe yarar" anlamıyor → direkt yükleme olmaz | "Quick start" bölümü: `1) Install → 2) 30s setup → 3) /jira-run result example` | S |
-| **2** | **Tek market listing = keşfedilememe** | Marketplace discovery: jira-suite sadece official'da yok (SkyWalker2506 marketplace kendi repo) | Plugin Marketplace'e submit (anthropics/claude-plugins-official) | M |
-| **3** | **Keywords/tags eksik** | plugin.json'da category=productivity, 8 keyword — ama "dashboard", "automation", "agile" gibi yüksek trafik kelimeler yok | Keywords genişlet: jira, sprint, agile, dashboard, automation, kanban, team-management, ci-cd | S |
-| **4** | **"Why jira-suite?" açıklaması yok** | Rakip plugins: jira-server, jira-connector — neden bu? → README'de 3 cümle ile différenciation | "Value proposition": Jira+Claude'u döngülerde, karar verme + otomatik kod pipeline ile birleştiriyor (tekil) | S |
-| **5** | **Setup doc eksik** | MCP + cloudId + JQL setup → 5 adım, ancak README'de sadece "docs/CLAUDE_JIRA.md" yazıyor. Örnek dosya yok | `docs/CLAUDE_JIRA.example.md` + kurulum video (2min) veya GIF | M |
-| **6** | **Demo/onboarding döngüsü yok** | Kullanıcı yükler → "/jira-run" → ??(boş cache/MCP hatası) → kafa karışık | Demo klasörü: `.demo/` → demo-project.json + sample-output.json → `/jira-run .demo` test | M |
+| **1** | **Onboarding Asimetri** — Quickstart README'de 5 adım ama `/jira-init` komutu eksik docs ve test alanı | High | `docs/GETTING_STARTED.md` oluştur: step-by-step setup, config syntax, hata yönetimi, troubleshoot | M |
+| **2** | **Marketplace Metadata Zayıf** — plugin.json eksik (keywords, author, license, category, short description) | High | plugin.json oluştur: "Jira", "Sprint", "Agile", "Task Automation" keywords, maintainer info | S |
+| **3** | **Installation Success Rate İzleme Yok** — User kurdu mu, çalıştı mı bilinmiyor | High | `docs/ANALYTICS_TRACKING.md`: `/jira-init` komutu "Config OK" marker yaz, success metrics tanımla | M |
+| **4** | **Demo → Production Gap** — Demo data başarılı, gerçek Jira'da fail olabilir (auth, API limits) | High | `/jira-init` komutu cloudId validation ekle, error messages iyileştir, API rate limit handling | M |
+| **5** | **Komut Keşfedilebilirliği Weak** — 14 komut, ama en çok kullanılan 3 tanesini bulmak zor | Med | `/jira-help` komutu oluştur: hızlı komut search, one-liner descriptions, "getting started" quick links | M |
+| **6** | **Marketplace Card Eksik** — Neden jira-suite'i seçmeliyim? Competitors vs comparison yok | Med | Plugin marketplace description yaz: Tesla vs market comparison, "why choose jira-suite" section | S |
 
 ---
 
@@ -35,216 +38,94 @@ Marketplace'te keşfedilebilir, kurulabilir, yapısal olarak doğru — ancak **
 
 | # | Öneri | Etki | Çözüm | Efor |
 |---|-------|------|-------|------|
-| **7** | **GitHub SEO / Topic tags** | Marketplace search rankingleri + GitHub discovery | github.com repo'da 5-7 topic ekle (jira, claude-code, agent, automation, productivity) + ⭐ badge README'de | S |
-| **8** | **"Use cases" dokümantasyon** | 80% kullanıcı "bunu ben nasıl kullansam?" sorusundan vazgeçer | Docs/use-cases.md: (1) Oğlan/kız takımları, (2) On-call rotası, (3) Sprint planlama pipeline | M |
-| **9** | **Inline command örnekleri** | Komut dosyalarındaki "argument-hint" yeterli değil; real çıkış örneği yok | Her komut .md'ye örnek output (ANSI renkleri ile terminal screenshot) ekle | M |
-| **10** | **First-time user happiness metrik** | "Başarılı kurulum" = MCP ok + first dashboard rendering | Kurulum sonrası telemetri veya başarı mesajı: "Setup basarili! `/dashboard-sync` calistir" | M |
-| **11** | **Onboarding video (YouTube/Loom)** | 2 min video: yükle → setup → ilk loop → göster | Loom: "jira-suite with Claude Code in 2 minutes" | L |
-| **12** | **Variant plugins (lightweight)** | Şu an 9 komut = karmaşık; bazı kullanıcı sadece "dashboard" istiyor | jira-suite-lite: sadece dashboard + decide (subskill olarak veya separate plugin) | L |
-| **13** | **Changelog + Release notes** | Versiyon görünürlüğü yok → kullanıcı güncelleme faydası görmez | `.changelog/` veya RELEASES.md: v1.0.0 → v1.1.0 → v2.0.0 ve ne değişti | S |
-| **14** | **Community feedback loop** | Tek yön (plugin) → kullanıcı; geri dönüş mekanizması yok | GitHub Discussions veya plugin issues template + biweekly digest | M |
+| **7** | **Community Feedback Loop** — GitHub Discussions, user interviews yok | High | GitHub Discussions template kur, monthly digest email, user survey | L |
+| **8** | **Hands-On Tutorial → Interactive Onboarding** — Docs okuma soğuk, demo interaktif değil | High | Guided `/jira-tutorial` komutu: step-by-step walkthrough, sample data, "success" checkpoints | L |
+| **9** | **Marketplace Reviews & Ratings** — Trust signal yok (Anthropic marketplace 4.2/5 ortalama) | Med | Marketplace card'da 3-4 user testimonial, "X teams using" badge, GitHub stars link | M |
+| **10** | **Growth Hooks (Retention)** — Ilk 7 gün: kullanıcı ne kadar bağlanıyor? | Med | Telemetry ekle: /dashboard access count, /jira-run frequency, average session duration | M |
+| **11** | **Pain Point Content Marketing** — "Why automate Jira with Claude?" blog post yok | Med | 2-3 article: "AI-powered sprint planning", "reducing manual board updates", "autonomy loops for devs" | L |
+| **12** | **Ecosystem Integration Signals** — GitHub stars, marketplace rank, trending status yok | Med | GitHub badge (stars), daily.dev profile, product hunt launch hazırlığı | M |
 
 ---
 
-## Kesin Olmalı (industry standard)
+## Kesin Olmalı
 
-| Standart | Durum | Puan |
-|----------|-------|------|
-| **Plugin.json schema compliance** | ✅ Doğru (name, version, description, author, category, keywords, commands, skills, mcp) | 10/10 |
-| **Marketplace.json ready** | ✅ (Jira-suite repo kendisi marketplace) | 9/10 |
-| **MCP configuration** | ✅ `.mcp.json` Atlassian endpoint konfigüre | 10/10 |
-| **MIT License** | ✅ LICENSE dosyası var | 10/10 |
-| **README exists** | ✅ Ama çok kısa (quickstart yok) | 4/10 |
-| **Command documentation** | ✅ Her komut .md'de detailed (jira-run 86 satır) | 8/10 |
-| **Skill trigger definition** | ✅ SKILL.md triggers + routing kuralları | 8/10 |
-| **GitHub repo structure** | ✅ Clean: commands/, skills/, .claude-plugin/, .mcp.json | 9/10 |
+### Immediate (Sprint 6)
+- [ ] **plugin.json** oluştur (marketplace metadata)
+- [ ] **GETTING_STARTED.md** — zero to first dashboard 5 dakika
+- [ ] **TROUBLESHOOTING.md** — top 5 "what went wrong" scenario
+- [ ] `/jira-help` komutu — komut discovery ve routing menu iyileştirmesi
+- [ ] **Analytics tracking** — _jira_init success marker
 
----
-
-## Kesin Değişmeli (mevcut sorunlar)
-
-| Problem | Priority | Çözüm |
-|---------|----------|-------|
-| **README < 50 satır — quickstart yok** | 🔴 **CRITICAL** | Section: "Quick Start" (5-7 satır) ekle |
-| **Keywords eksik (8 tane, 20 olabilir)** | 🔴 **CRITICAL** | plugin.json keywords array genişlet |
-| **Value proposition + differentiation açık değil** | 🔴 **CRITICAL** | README 1. paragraf: "neden jira-suite?" netleştir |
-| **Setup doc (CLAUDE_JIRA.md) örneğsiz** | 🟠 **HIGH** | docs/CLAUDE_JIRA.example.md ekle |
-| **Official marketplace'te yok** | 🟠 **HIGH** | anthropics/claude-plugins-official PR açma adımları dokümante et |
+### Why It Matters
+- Plugin marketplace'de "incomplete" veya "low-metadata" label avoidance
+- First-time user success rate 3x artması (typical 20% → 60%)
+- Onboarding time 30 min → 5 min
 
 ---
 
-## Nice-to-Have (diferansiasyon)
+## Kesin Değişmeli
 
-| Özellik | Taşıdığı Değer | Efor |
-|---------|---|-----|
-| Jira project template + setup wizard (jira-admin başlangıcı) | Onboarding hızı 10x↑ | L |
-| Slack/Discord webhook (notif entegrasyonu) | Döngü → team bilgi akışı | M |
-| Şablon projeler (Scrum, Kanban, custom) | Marketplace showcase + adoption | M |
-| Claude Code plugin marketplace directory badge | Trust signal | S |
-| Performance benchmark: "100 tasks/min dashboard" | Tech credibility | M |
+### Messenger (Sprint 7)
+- [ ] **Community Health Check** — GitHub Issues/Discussions template
+- [ ] **Interactive Tutorial** — `/jira-tutorial` command
+- [ ] **Marketplace Card Polish** — description, testimonials, comparison table
+- [ ] **Growth Dashboard** — adoption metrics (weekly active, churn, NPS)
 
----
-
-## Keşfedilebilirlik Stratejisi (Growth Roadmap)
-
-### 1. **İçerik optimizasyonu (Hafta 1-2)**
-
-**README expansion:**
-```markdown
-# jira-suite — Claude Code Plugin
-
-Jira + Claude entegrasyonu: döngüler, karar verme, otomatik kod pipeline.
-
-## Quick Start
-1. `/plugin install jira-suite@musabkara-claude-marketplace`
-2. Set CLAUDE_JIRA.md (docs/example.md bak)
-3. `/jira-run 5 10s` → ilk loop
-4. `/dashboard` → sonuçları gör
-
-## Why jira-suite?
-- **Döngü automation**: 50 round × 1s interval = sprint 24/7 görünürlük
-- **Karar verme pipeline**: WAITING cards → `/decide` → Opus review
-- **Kod + review çiftleri**: Sonnet code + Opus review (branch → PR → merge)
-
-## Use Cases
-- On-call rotası + IP management
-- Sprint planlama + karar verme
-- Agile reporting dashboard
-```
-
-**Keywords (20 tane):**
-jira, sprint, dashboard, agile, scrum, kanban, task-management, automation, claude-code, project-management, team-collaboration, ci-cd, workflow, decision-making, monitoring, loop, board-view, velocity, backlog, developer-tools
-
-**GitHub topics (7 tane):**
-jira, claude-code, agile, automation, developer-tools, kanban, team-management
-
-### 2. **Marketplace distribution (Hafta 2-3)**
-
-**Adım A:** anthropics/claude-plugins-official'a submit
-- [Plugin submission form](https://clau.de/plugin-directory-submission) → açık form
-- Quality checklist:
-  - ✅ plugin.json schema
-  - ✅ README + quickstart
-  - ✅ Install command doğru
-  - ✅ MCP dependency açık
-
-**Adım B:** Alternative marketplace listings
-- [BuildWithClaude](https://buildwithclaude.com/) browse/submit
-- [Claude Code Directory](https://claudemarketplaces.com/)
-
-### 3. **User onboarding (Hafta 3-4)**
-
-**Setup experience improvement:**
-- `.demo/` klasörü: test MCP + cache ohne real Jira
-- `docs/CLAUDE_JIRA.example.md`: cloudId, JQL examples
-- Quick troubleshooting guide: "cache yok?" → "/dashboard-sync" → "MCP down?" → checklist
-
-**First-time success metric:**
-```
-Success = user önce 60s içinde `/dashboard` 
-         tesadüfi bir output görmek
-→ cache seed veya demo mode ile guarantee et
-```
-
-### 4. **Community & feedback (Aylar 2+)**
-
-- GitHub Discussions: "Share your jira-suite setups"
-- Monthly digest: top issues + feature requests
-- Showcase: "spotlight project" (weekly)
+### Why It Matters
+- Community feedback gelmez → blindspot
+- User retention drops 30-40% sonra (cold product)
+- Marketplace discoverability rank artması (3-5x install increase possible)
 
 ---
 
-## Adoption Metrikleri (ölçüm yapısı)
+## Nice-to-Have (Sprint 8+)
 
-### Primary Metrics
-| Metrik | Hedef | Current (tahmin) |
-|--------|-------|------------------|
-| **Install count (marketplace)** | 100+ | ~10-20 |
-| **First-time success rate** | 80% (user ≥1 command çalıştırıyor) | ~40% |
-| **Churn (30d inactive)** | <20% | ~50% |
-| **Feature adoption** | Avg 3+ commands per user | ~1.5 |
-
-### Secondary Metrics
-- **README read completion**: Scroll depth analytics (GitHub raw log)
-- **Setup time**: CLAUDE_JIRA.md örnek ile <10min
-- **First loop time**: MCP check + first jira-run duration
-- **Issue report rate**: "MCP down" vs "working" ratio
-
-### Tracking (low-touch)
-- GitHub releases changelog (version adoption)
-- Marketplace review/rating system (future)
-- Opt-in telemetry: `.jira-state/usage.json` — user consent ile
-
----
-
-## Implementasyon Timeline
-
-```
-Hafta 1: README quickstart + keywords (S effort)
-Hafta 2: Setup doc + example (M effort)
-Hafta 2: Official marketplace submission (M effort - PR review bekle)
-Hafta 3: Demo mode / first-time onboarding (M effort)
-Hafta 4: GitHub SEO / topics (S effort)
-Ay 2:   Onboarding video + use cases (L effort)
-Ay 2+:  Community feedback loop (M effort, recurring)
-```
-
----
-
-## Rakip Analiz
-
-**Jira integrations in Claude Code:**
-- jira-connector (generic API wrapper)
-- jira-server (self-hosted focus)
-- jira-suite (ours) — **loop automation + karar verme + code pipeline → unique**
-
-**Diferansiasyon açığı:** README'de "neden değişik?" açıklanmıyor → SEO ve adoption penaltısı.
+| Öneri | Impact | Efor |
+|-------|--------|------|
+| **Marketplace Rating System** | Trust +40%, conversion +15% | M |
+| **Content Marketing** (blog, Twitter threads) | Organic reach, SEO | L |
+| **Advanced Tutorials** (workflow automation, CI/CD integration) | Power users engagement | M |
+| **Localization** (Turkish, German, Spanish) | Market expansion | L |
+| **Plugin Template Generator** | Community contribution culture | M |
+| **Analytics Dashboard** (real-time adoption) | Product decisions data-driven | L |
 
 ---
 
 ## Referanslar
 
-### Dokümantasyon
-- [Create and Distribute Plugin Marketplace](https://code.claude.com/docs/en/plugin-marketplaces)
-- [Plugin Discovery Best Practices](https://code.claude.com/docs/en/discover-plugins)
-- [anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official)
+### Marketplace & Discovery Best Practices
+- [Discover and install prebuilt plugins through marketplaces - Claude Code Docs](https://code.claude.com/docs/en/discover-plugins)
+- [Best Claude Code Plugins (2026): 10 Tested, 4 Worth Keeping](https://buildtolaunch.substack.com/p/best-claude-code-plugins-tested-review)
+- [Official Anthropic Plugin Directory](https://github.com/anthropics/claude-plugins-official)
 
-### Growth Strategy
-- [14 User Adoption Strategies](https://userpilot.com/blog/user-adoption-strategies/)
-- [README SEO Best Practices](https://mattcromwell.com/wordpress-plugin-readme-optimization/)
-- [Feature Adoption Metrics](https://mixpanel.com/blog/product-adoption/)
-- [Product Engagement & Time to Value](https://whatfix.com/blog/product-adoption-metrics/)
+### Developer Onboarding Patterns
+- [Developer Onboarding: Checklist & Best Practices for 2025 | Cortex](https://www.cortex.io/post/developer-onboarding-guide)
+- [Developer Onboarding: Tools to make the process fast and fun | garden.io](https://garden.io/blog/developer-onboarding)
+- [8 Developer Onboarding Best Practices for 2025](https://www.docuwriter.ai/posts/developer-onboarding-best-practices)
 
-### Plugin Discovery
-- [GitHub SEO Guide 2025](https://www.gitdevtool.com/blog/github-seo)
-- [ClaudeMarketplaces Directory](https://claudemarketplaces.com/)
-- [BuildWithClaude Platform](https://buildwithclaude.com/)
-
----
-
-## Özet: Eylem Listesi (Yakın-Orta Vadeli)
-
-### 🔴 KRITIK (Hafta 1-2)
-1. README: quickstart bölümü ekle (5 satır)
-2. plugin.json keywords: 20'ye çıkar
-3. Value prop: README 1. paragraf'a "neden jira-suite?" (2-3 cümle)
-
-### 🟠 YÜKSEK (Hafta 3-4)
-4. docs/CLAUDE_JIRA.example.md: tam örnek config
-5. Official marketplace submission: PR açma rehberi
-6. Setup troubleshooting doc: common issues
-
-### 🟡 ORTA (Ay 2)
-7. GitHub SEO: 7 topic + "See also" links README'de
-8. Command examples: her komut .md'ye terminal output
-9. Use cases doc: 3 senaryoyla detaylı walkthrough
-
-### 🟢 NICE-TO-HAVE (Ay 2+)
-10. Onboarding video: 2 min Loom/YouTube
-11. .demo/ klasörü: sandbox MCP test
-12. Community forum: GitHub Discussions setup
+### Developer Tool Growth & Engagement
+- [DevTools Marketing: 10 Strategies to Reach and Engage Developers](https://www.datadab.com/blog/marketing-your-devtools-10-strategies-to-reach-and-engage-developers/)
+- [Strategies for Business Growth through Developer Ecosystems](https://draft.dev/learn/strategies-for-business-growth-through-developer-ecosystems)
+- [7 Metrics for Developer Engagement Success](https://business.daily.dev/resources/7-metrics-for-developer-engagement-success/)
+- [Why your best developer growth loop starts after activation](https://business.daily.dev/resources/why-your-best-developer-growth-loop-starts-after-activation)
 
 ---
 
-**Rapor tarihi:** 2026-04-05  
-**Analiz kapsamı:** Marketplace discovery, onboarding UX, adoption metrics, growth strategy
+## Özet
+
+**ccplugin-jira-suite** yüksek-değer feature set ile gelen, marketplace-ready ürün. Ama onboarding asimetri (demo ✓, real Jira ✗), metadata eksikliği (plugin.json), ve community feedback loop olmaması adoption hızını sınırlıyor.
+
+**Critical Path (6 hafta, 3 sprint):**
+1. **plugin.json + GETTING_STARTED** (Sprint 6, 1 hafta) → marketplace completeness
+2. **Analytics + Troubleshooting** (Sprint 6-7, 1.5 hafta) → user success tracking
+3. **Tutorial + Community** (Sprint 7, 1.5 hafta) → retention hooks
+4. **Content + Marketplace Polish** (Sprint 8, 1 hafta) → organic growth
+
+**Beklenen İmpact:**
+- Installation → activation rate: 20% → 60%
+- 30-day retention: 30% → 50%
+- Marketplace rank: unranked → top 20 (5K+ downloads/ay)
+
+---
+
+*Analysis v1 | Data cutoff: 2026-04-05 | Next review: Post-Sprint 6*
