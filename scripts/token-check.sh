@@ -12,22 +12,40 @@ check_token_age() {
     return 1
   fi
 
-  # Check file modification time as proxy for token creation
-  local file_age_days
-  if [[ "$(uname)" == "Darwin" ]]; then
-    local mod_time
-    mod_time=$(stat -f %m "$SECRETS_FILE")
-    local now
+  # Prefer TOKEN_CREATED date recorded by setup-token; fall back to file mtime
+  local token_age_days created_line created_epoch now mod_time
+
+  created_line=$(grep -m1 "^# TOKEN_CREATED=" "$SECRETS_FILE" 2>/dev/null | cut -d= -f2)
+
+  if [[ -n "$created_line" ]]; then
     now=$(date +%s)
-    file_age_days=$(( (now - mod_time) / 86400 ))
-  else
-    file_age_days=$(( ($(date +%s) - $(stat -c %Y "$SECRETS_FILE")) / 86400 ))
+    if [[ "$(uname)" == "Darwin" ]]; then
+      created_epoch=$(date -j -f "%Y-%m-%d" "$created_line" "+%s" 2>/dev/null)
+    else
+      created_epoch=$(date -d "$created_line" "+%s" 2>/dev/null)
+    fi
+    if [[ -n "$created_epoch" ]]; then
+      token_age_days=$(( (now - created_epoch) / 86400 ))
+    else
+      echo "⚠ Could not parse TOKEN_CREATED date '$created_line' — falling back to file mtime" >&2
+    fi
   fi
 
-  local remaining=$((365 - file_age_days))
+  if [[ -z "$token_age_days" ]]; then
+    # Fallback: use file modification time as proxy for token creation
+    now=$(date +%s)
+    if [[ "$(uname)" == "Darwin" ]]; then
+      mod_time=$(stat -f %m "$SECRETS_FILE")
+    else
+      mod_time=$(stat -c %Y "$SECRETS_FILE")
+    fi
+    token_age_days=$(( (now - mod_time) / 86400 ))
+  fi
+
+  local remaining=$((365 - token_age_days))
 
   if [[ $remaining -le 0 ]]; then
-    echo "✗ API token likely EXPIRED (file is ${file_age_days} days old). Rotate now:" >&2
+    echo "✗ API token likely EXPIRED (token is ${token_age_days} days old). Rotate now:" >&2
     echo "  → https://id.atlassian.com/manage-profile/security/api-tokens" >&2
     return 2
   elif [[ $remaining -le 30 ]]; then

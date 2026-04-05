@@ -22,6 +22,8 @@ argument-hint: "[rounds] [interval] — e.g. 50 1s | 10 | 10_1m | empty = 10 rou
 
 ```bash
 rm -f .jira-state/jira-run.stop
+# Register cleanup trap so /tmp/jira_run_status.json is removed on exit/interrupt
+trap 'rm -f /tmp/jira_run_status.json' EXIT INT TERM
 ```
 
 Run at repo root: `cd "$(git rev-parse --show-toplevel)"` if needed.
