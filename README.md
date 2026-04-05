@@ -38,6 +38,12 @@ claude plugin install jira-suite@musabkara-claude-marketplace
 | `/decide [max]` | Quick decision loop for WAITING FOR APPROVAL cards |
 | `/dashboard` | Terminal dashboard from cache (zero tokens) |
 | `/dashboard-sync` | Fetch fresh Jira data, update cache, show dashboard |
+| `/jira-admin` | Admin operations: bulk transitions, cleanup, board maintenance |
+| `/jira-init` | Initialize `docs/CLAUDE_JIRA.md` config for a new project |
+| `/jira-link` | Link a Jira issue to a GitHub PR or commit |
+| `/jira-report` | Generate a sprint or project status report |
+| `/jira-switch` | Switch active Jira project context |
+| `/jira-worklog` | Log time spent on a Jira issue |
 
 ## Setup
 
@@ -55,5 +61,5 @@ MIT
 
 ## Part of
 
-- [claude-config](https://github.com/SkyWalker2506/claude-config) — Multi-Agent OS for Claude Code (110 agents, local-first routing)
+- [claude-config](https://github.com/SkyWalker2506/claude-config) — Multi-Agent OS for Claude Code (134 agents, local-first routing)
 - [Plugin Marketplace](https://github.com/SkyWalker2506/claude-marketplace) — Browse & install all 14 plugins
