@@ -15,8 +15,8 @@ rotate_log() {
   line_count=$(wc -l < "$log_file")
 
   if [[ $line_count -gt $max_lines ]]; then
-    # Keep first max_lines (newest on top)
-    head -n "$max_lines" "$log_file" > "${log_file}.tmp"
+    # Keep newest max_lines entries
+    tail -n "$max_lines" "$log_file" > "${log_file}.tmp"
     mv "${log_file}.tmp" "$log_file"
     echo "[log-rotate] Trimmed $log_file from $line_count to $max_lines lines." >&2
   fi
