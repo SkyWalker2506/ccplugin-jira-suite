@@ -102,7 +102,7 @@ BOARD_ID=$(curl -s -H "$JIRA_AUTH_HEADER" "${JIRA_URL}/rest/agile/1.0/board?proj
 
 # Apply selected template — column names escaped to prevent JSON injection
 for COL in "${COLUMNS[@]}"; do
-  ESCAPED=$(python3 -c "import json; print(json.dumps('$COL'))")
+  ESCAPED=$(python3 -c "import json,sys; print(json.dumps(sys.argv[1]))" "$COL")
   curl -s -H "$JIRA_AUTH_HEADER" -X POST "${JIRA_URL}/rest/agile/1.0/board/${BOARD_ID}/column" \
     -H "Content-Type: application/json" \
     -d "{\"name\": $ESCAPED}" > /dev/null
@@ -136,7 +136,7 @@ for COL in "${COLUMNS[@]}"; do
   if echo "$EXISTING" | grep -qx "$COL"; then
     echo "  ⏭  $COL (already exists)"
   else
-    ESCAPED=$(python3 -c "import json; print(json.dumps('$COL'))")
+    ESCAPED=$(python3 -c "import json,sys; print(json.dumps(sys.argv[1]))" "$COL")
     RES=$(curl -s -o /dev/null -w "%{http_code}" -H "$JIRA_AUTH_HEADER" \
       -X POST "${JIRA_URL}/rest/agile/1.0/board/${BOARD_ID}/column" \
       -H "Content-Type: application/json" \
