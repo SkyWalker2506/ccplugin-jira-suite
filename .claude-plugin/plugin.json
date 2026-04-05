@@ -17,7 +17,8 @@
     "commands/jira-start-new-task.md",
     "commands/decide.md",
     "commands/dashboard.md",
-    "commands/dashboard-sync.md"
+    "commands/dashboard-sync.md",
+    "commands/jira-admin.md"
   ],
   "skills": [
     "skills/jira-suite/SKILL.md"
