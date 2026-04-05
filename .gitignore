@@ -12,3 +12,9 @@ tmp/
 # Secrets (should never be here, but just in case)
 secrets.env
 *.env.local
+
+# Generated audit log (runtime artifact)
+docs/audit_log.md
+
+# Local Claude Code settings
+.claude/settings.local.json
