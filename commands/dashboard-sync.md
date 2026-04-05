@@ -59,13 +59,9 @@ Parse results and write to `.jira_cache.json`:
 }
 ```
 
-Status mapping:
-- `"To Do"` -> todo
-- `"In Progress"` -> in_progress
-- `"WAITING FOR APPROVAL"` -> waiting
-- `"BLOCKED"` -> blocked
-- `"BACKLOG"` -> backlog
-- `"Done"` -> done_recent (last 10)
+Status mapping is centralized in `scripts/status_map.py` (`STATUS_MAP` dict).
+Use `map_status(jira_status)` to convert any Jira status string to its internal key.
+`"Done"` maps to `done_recent` (last 10).
 
 ### 3. Render dashboard
 

@@ -8,14 +8,31 @@ STATUS_MAP = {
     "WAITING FOR APPROVAL": "waiting",
     "BLOCKED": "blocked",
     "BACKLOG": "backlog",
+    "Backlog": "backlog",
     "Done": "done",
+    "Review": "review",
+    "Testing": "testing",
+    "Cancelled": "cancelled",
+    "Released": "released",
+    "Beta": "beta",
+    "Staging": "staging",
+    "Deploying": "deploying",
+    "Model Training": "model_training",
+    # ideas board
+    "Idea": "idea",
+    "Evaluating": "evaluating",
+    "Parked": "parked",
+    "Accepted": "accepted",
+    "In Development": "in_development",
+    "Rejected": "rejected",
+    "Archived": "archived",
 }
 
 # Reverse: internal key -> Jira status name
 REVERSE_MAP = {v: k for k, v in STATUS_MAP.items()}
 
 # Dashboard section order
-SECTION_ORDER = ["in_progress", "blocked", "waiting", "todo", "backlog"]
+SECTION_ORDER = ["in_progress", "review", "testing", "blocked", "waiting", "todo", "backlog"]
 
 
 def map_status(jira_status: str) -> str:
