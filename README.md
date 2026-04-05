@@ -10,6 +10,10 @@ Jira and sprint management suite for Claude Code — run loops, dashboards, deci
 claude plugin install jira-suite@musabkara-claude-marketplace
 ```
 
+## Getting Started
+
+New to jira-suite? → **[docs/GETTING_STARTED.md](docs/GETTING_STARTED.md)** — zero to dashboard in 5 minutes, with or without a Jira account.
+
 ## Quickstart
 
 1. Install the plugin: `claude plugin install jira-suite@musabkara-claude-marketplace`
