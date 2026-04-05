@@ -50,7 +50,13 @@ Used by both `create-project` and `setup-columns`. Select based on project type.
 
 Column templates are defined in `templates/columns.json`. Load with:
 ```bash
-COLUMNS=$(python3 -c "import json; print('\n'.join(json.load(open('templates/columns.json'))['${TEMPLATE:-software}']))")
+# Validate TEMPLATE before interpolation into Python (whitelist: lowercase letters, digits, hyphens, underscores; max 20 chars)
+TEMPLATE="${TEMPLATE:-software}"
+if [[ ! "$TEMPLATE" =~ ^[a-z][a-z0-9_-]{0,19}$ ]]; then
+  echo "❌ Invalid TEMPLATE value: '$TEMPLATE' (must match ^[a-z][a-z0-9_-]{0,19}$)"
+  exit 1
+fi
+COLUMNS=$(python3 -c "import json; print('\n'.join(json.load(open('templates/columns.json'))['${TEMPLATE}']))")
 ```
 
 Available templates: `base`, `software` (default), `mobile`, `ai-ml`, `saas`, `bot`, `ideas`, `minimal`.
