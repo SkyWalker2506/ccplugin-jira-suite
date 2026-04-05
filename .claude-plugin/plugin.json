@@ -16,7 +16,19 @@
     "task-management",
     "scrum",
     "kanban",
-    "project-management"
+    "project-management",
+    "backlog",
+    "board",
+    "automation",
+    "loop",
+    "pipeline",
+    "standup",
+    "workflow",
+    "decision",
+    "planning",
+    "atlassian",
+    "issue-tracker",
+    "devops"
   ],
   "commands": [
     "commands/jira-run.md",
@@ -27,7 +39,8 @@
     "commands/decide.md",
     "commands/dashboard.md",
     "commands/dashboard-sync.md",
-    "commands/jira-admin.md"
+    "commands/jira-admin.md",
+    "commands/jira-init.md"
   ],
   "skills": [
     "skills/jira-suite/SKILL.md"

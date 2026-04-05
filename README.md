@@ -10,6 +10,22 @@ Jira and sprint management suite for Claude Code — run loops, dashboards, deci
 claude plugin install jira-suite@musabkara-claude-marketplace
 ```
 
+## Quickstart
+
+1. Install the plugin: `claude plugin install jira-suite@musabkara-claude-marketplace`
+2. Create `docs/CLAUDE_JIRA.md` in your project with your Jira project key and cloudId
+3. Run `/dashboard-sync` to verify Jira connection
+4. Use `/jira-run` to start the automated check loop
+5. Use `/decide` to review and action WAITING cards
+
+## Why jira-suite?
+
+- **Autonomous loops** — `/jira-run` continuously checks your board, transitions cards, and reports status without manual intervention
+- **Decision pipeline** — `/decide` surfaces WAITING cards for quick T(op)/B(ottom)/W(ait)/D(one) decisions
+- **Multi-agent task runner** — `/jira-start-new-task` picks unassigned tasks and runs a Sonnet code + Opus review pipeline per task
+- **Zero-token dashboard** — `/dashboard` renders your board from cache, no API calls needed
+- **Drop-in plugin** — one install command, works with any Jira project via `docs/CLAUDE_JIRA.md` config
+
 ## Commands
 
 | Command | Description |
