@@ -20,7 +20,26 @@ If missing, run `setup-token` operation below.
 All operations use:
 ```bash
 source ~/.claude/secrets/secrets.env 2>/dev/null
-JIRA_AUTH="${JIRA_EMAIL:-$JIRA_USERNAME}:${JIRA_API_TOKEN}"
+
+# Dependency check
+for cmd in python3 curl; do
+  command -v "$cmd" >/dev/null 2>&1 || { echo "❌ Required dependency missing: $cmd"; exit 1; }
+done
+
+# Auth header (avoids token exposure in ps aux — unlike curl -u)
+JIRA_AUTH_HEADER="Authorization: Basic $(printf '%s' "${JIRA_EMAIL:-$JIRA_USERNAME}:${JIRA_API_TOKEN}" | base64)"
+```
+
+### Input validation
+
+```bash
+validate_project_key() {
+  [[ "$1" =~ ^[A-Z][A-Z0-9]{1,9}$ ]] || { echo "❌ Invalid PROJECT_KEY: '$1' (must match [A-Z][A-Z0-9]{1,9})"; exit 1; }
+}
+
+validate_issue_key() {
+  [[ "$1" =~ ^[A-Z][A-Z0-9]{1,9}-[0-9]+$ ]] || { echo "❌ Invalid ISSUE_KEY: '$1' (must match KEY-123)"; exit 1; }
+}
 ```
 
 ---
@@ -65,14 +84,16 @@ When user doesn't specify a type, ask or default to `software`.
 
 ```bash
 source ~/.claude/secrets/secrets.env 2>/dev/null
-JIRA_AUTH="${JIRA_EMAIL:-$JIRA_USERNAME}:${JIRA_API_TOKEN}"
+JIRA_AUTH_HEADER="Authorization: Basic $(printf '%s' "${JIRA_EMAIL:-$JIRA_USERNAME}:${JIRA_API_TOKEN}" | base64)"
+
+validate_project_key "<KEY>"
 
 # Get lead account ID
-LEAD_ID=$(curl -s -u "$JIRA_AUTH" "${JIRA_URL}/rest/api/3/myself" | \
+LEAD_ID=$(curl -s -H "$JIRA_AUTH_HEADER" "${JIRA_URL}/rest/api/3/myself" | \
   python3 -c "import json,sys; print(json.load(sys.stdin)['accountId'])")
 
 # Create project
-RESULT=$(curl -s -w "\n%{http_code}" -u "$JIRA_AUTH" -X POST "${JIRA_URL}/rest/api/3/project" \
+RESULT=$(curl -s -w "\n%{http_code}" -H "$JIRA_AUTH_HEADER" -X POST "${JIRA_URL}/rest/api/3/project" \
   -H "Content-Type: application/json" \
   -d '{
     "key": "<KEY>",
@@ -82,21 +103,28 @@ RESULT=$(curl -s -w "\n%{http_code}" -u "$JIRA_AUTH" -X POST "${JIRA_URL}/rest/a
     "projectTemplateKey": "com.pyxis.greenhopper.jira:gh-simplified-agility-kanban"
   }')
 HTTP_CODE=$(echo "$RESULT" | tail -1)
-BODY=$(echo "$RESULT" | head -1)
+BODY=$(echo "$RESULT" | sed '$d')
+
+if [ "$HTTP_CODE" != "201" ]; then
+  echo "❌ Project creation failed (HTTP $HTTP_CODE): $BODY"
+  exit 1
+fi
+
 PROJECT_ID=$(echo "$BODY" | python3 -c "import json,sys; print(json.load(sys.stdin).get('id',''))" 2>/dev/null)
 ```
 
-If HTTP 201, apply column template (default: `software`):
+Apply column template (default: `software`):
 
 ```bash
-BOARD_ID=$(curl -s -u "$JIRA_AUTH" "${JIRA_URL}/rest/agile/1.0/board?projectKeyOrId=<KEY>" | \
+BOARD_ID=$(curl -s -H "$JIRA_AUTH_HEADER" "${JIRA_URL}/rest/agile/1.0/board?projectKeyOrId=<KEY>" | \
   python3 -c "import json,sys; d=json.load(sys.stdin); print(d['values'][0]['id'] if d.get('values') else '')" 2>/dev/null)
 
-# Apply selected template (replace COLUMNS with template list below)
+# Apply selected template — column names escaped to prevent JSON injection
 for COL in "${COLUMNS[@]}"; do
-  curl -s -u "$JIRA_AUTH" -X POST "${JIRA_URL}/rest/agile/1.0/board/${BOARD_ID}/column" \
+  ESCAPED=$(python3 -c "import json; print(json.dumps('$COL'))")
+  curl -s -H "$JIRA_AUTH_HEADER" -X POST "${JIRA_URL}/rest/agile/1.0/board/${BOARD_ID}/column" \
     -H "Content-Type: application/json" \
-    -d '{"name": "'"$COL"'"}' > /dev/null
+    -d "{\"name\": $ESCAPED}" > /dev/null
 done
 ```
 
@@ -110,25 +138,28 @@ Add columns to an **existing** project. Skips columns that already exist.
 
 ```bash
 source ~/.claude/secrets/secrets.env 2>/dev/null
-JIRA_AUTH="${JIRA_EMAIL:-$JIRA_USERNAME}:${JIRA_API_TOKEN}"
+JIRA_AUTH_HEADER="Authorization: Basic $(printf '%s' "${JIRA_EMAIL:-$JIRA_USERNAME}:${JIRA_API_TOKEN}" | base64)"
+
+validate_project_key "<PROJECT_KEY>"
 
 # Find board
-BOARD_ID=$(curl -s -u "$JIRA_AUTH" "${JIRA_URL}/rest/agile/1.0/board?projectKeyOrId=<PROJECT_KEY>" | \
+BOARD_ID=$(curl -s -H "$JIRA_AUTH_HEADER" "${JIRA_URL}/rest/agile/1.0/board?projectKeyOrId=<PROJECT_KEY>" | \
   python3 -c "import json,sys; d=json.load(sys.stdin); print(d['values'][0]['id'] if d.get('values') else '')")
 
 # Get existing columns (to skip duplicates)
-EXISTING=$(curl -s -u "$JIRA_AUTH" "${JIRA_URL}/rest/agile/1.0/board/${BOARD_ID}/configuration" | \
+EXISTING=$(curl -s -H "$JIRA_AUTH_HEADER" "${JIRA_URL}/rest/agile/1.0/board/${BOARD_ID}/configuration" | \
   python3 -c "import json,sys; d=json.load(sys.stdin); [print(c['name']) for c in d.get('columnConfig',{}).get('columns',[])]")
 
-# Add only missing columns
+# Add only missing columns — column names escaped to prevent JSON injection
 for COL in "${COLUMNS[@]}"; do
   if echo "$EXISTING" | grep -qx "$COL"; then
     echo "  ⏭  $COL (already exists)"
   else
-    RES=$(curl -s -o /dev/null -w "%{http_code}" -u "$JIRA_AUTH" \
+    ESCAPED=$(python3 -c "import json; print(json.dumps('$COL'))")
+    RES=$(curl -s -o /dev/null -w "%{http_code}" -H "$JIRA_AUTH_HEADER" \
       -X POST "${JIRA_URL}/rest/agile/1.0/board/${BOARD_ID}/column" \
       -H "Content-Type: application/json" \
-      -d '{"name": "'"$COL"'"}')
+      -d "{\"name\": $ESCAPED}")
     [ "$RES" = "200" ] || [ "$RES" = "201" ] && echo "  ✅ $COL" || echo "  ❌ $COL ($RES)"
   fi
 done
@@ -142,12 +173,15 @@ Note: Column **ordering** is not supported by Jira REST API — must be done man
 
 ```bash
 source ~/.claude/secrets/secrets.env 2>/dev/null
-JIRA_AUTH="${JIRA_EMAIL:-$JIRA_USERNAME}:${JIRA_API_TOKEN}"
+JIRA_AUTH_HEADER="Authorization: Basic $(printf '%s' "${JIRA_EMAIL:-$JIRA_USERNAME}:${JIRA_API_TOKEN}" | base64)"
 
-PROJECT_ID=$(curl -s -u "$JIRA_AUTH" "${JIRA_URL}/rest/api/3/project/<TARGET_PROJECT_KEY>" | \
+validate_issue_key "<ISSUE_KEY>"
+validate_project_key "<TARGET_PROJECT_KEY>"
+
+PROJECT_ID=$(curl -s -H "$JIRA_AUTH_HEADER" "${JIRA_URL}/rest/api/3/project/<TARGET_PROJECT_KEY>" | \
   python3 -c "import json,sys; print(json.load(sys.stdin)['id'])")
 
-curl -s -u "$JIRA_AUTH" -X PUT "${JIRA_URL}/rest/api/3/issue/<ISSUE_KEY>" \
+curl -s -H "$JIRA_AUTH_HEADER" -X PUT "${JIRA_URL}/rest/api/3/issue/<ISSUE_KEY>" \
   -H "Content-Type: application/json" \
   -d '{"fields": {"project": {"id": "'$PROJECT_ID'"}}}'
 ```
@@ -171,11 +205,14 @@ xdg-open "https://id.atlassian.com/manage-profile/security/api-tokens" 2>/dev/nu
 SECRETS_FILE="$HOME/.claude/secrets/secrets.env"
 mkdir -p "$(dirname "$SECRETS_FILE")"
 touch "$SECRETS_FILE"
+chmod 600 "$SECRETS_FILE"
 open -e "$SECRETS_FILE" 2>/dev/null || ${EDITOR:-nano} "$SECRETS_FILE" 2>/dev/null || xdg-open "$SECRETS_FILE" 2>/dev/null || true
 ```
 3. Tell user: "Token page and secrets file opened. Add your token, then run again."
 
-**If all present:** verify via `/rest/api/3/myself`, show display name + email.
+**If all present:**
+1. Ensure file permissions: `chmod 600 "$SECRETS_FILE"`
+2. Verify via `/rest/api/3/myself` (using header auth, not `-u`), show display name + email.
 
 ---
 

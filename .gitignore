@@ -1,0 +1,14 @@
+# Jira cache and state
+.jira_cache.json
+.jira-state/
+
+# Temporary files
+tmp/
+/tmp/
+
+# OS files
+.DS_Store
+
+# Secrets (should never be here, but just in case)
+secrets.env
+*.env.local
