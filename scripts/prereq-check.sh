@@ -10,6 +10,22 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/colors.sh"
 
+# Check secrets.env exists and has strict permissions (600)
+_SECRETS_FILE="$HOME/.claude/secrets/secrets.env"
+if [[ -f "$_SECRETS_FILE" ]]; then
+  if [[ "$(uname)" == "Darwin" ]]; then
+    _SECRETS_PERMS=$(stat -f "%A" "$_SECRETS_FILE")
+  else
+    _SECRETS_PERMS=$(stat -c "%a" "$_SECRETS_FILE")
+  fi
+  if [[ "$_SECRETS_PERMS" != "600" ]]; then
+    warn "secrets.env permissions are ${_SECRETS_PERMS} — should be 600. Run: chmod 600 ${_SECRETS_FILE}"
+  fi
+else
+  warn "secrets.env not found at ${_SECRETS_FILE}"
+fi
+unset _SECRETS_FILE _SECRETS_PERMS
+
 # Check required commands
 for cmd in python3 curl jq; do
   if ! command -v "$cmd" &>/dev/null; then
