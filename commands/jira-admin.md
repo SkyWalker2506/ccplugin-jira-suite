@@ -48,31 +48,12 @@ validate_issue_key() {
 
 Used by both `create-project` and `setup-columns`. Select based on project type.
 
+Column templates are defined in `templates/columns.json`. Load with:
+```bash
+COLUMNS=$(python3 -c "import json; print('\n'.join(json.load(open('templates/columns.json'))['${TEMPLATE:-software}']))")
 ```
-base        → Backlog, To Do, In Progress, Review, Testing, Done, Cancelled
-              (universal — works for any project)
 
-software    → base + WAITING, Blocked, Released
-              (general software project)
-
-mobile      → software + Beta
-              (iOS/Android — TestFlight/internal track stage)
-
-ai-ml       → software + Model Training
-              (ML pipelines — training runs separately from development)
-
-saas        → software + Staging, Beta
-              (web apps with staged rollout)
-
-bot         → software + Deploying
-              (trading bots, automation — live monitoring period)
-
-ideas       → Idea, Evaluating, Parked, Accepted, In Development, Done, Rejected, Archived
-              (idea pipeline — not for development tasks)
-
-minimal     → To Do, In Progress, Done
-              (simple projects, side projects, experiments)
-```
+Available templates: `base`, `software` (default), `mobile`, `ai-ml`, `saas`, `bot`, `ideas`, `minimal`.
 
 When user doesn't specify a type, ask or default to `software`.
 

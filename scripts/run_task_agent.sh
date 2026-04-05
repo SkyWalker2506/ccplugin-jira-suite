@@ -24,6 +24,7 @@ mkdir -p "$LOCK_DIR"
 cleanup() {
     rm -f "$WORKING_LOCK"
     rm -f "$LOCK_DIR"/*"${ISSUE_KEY}"* 2>/dev/null
+    rm -f "/tmp/jira_run_status.json"
     echo "[${ISSUE_KEY}] Locks cleaned up."
 }
 trap cleanup EXIT INT TERM

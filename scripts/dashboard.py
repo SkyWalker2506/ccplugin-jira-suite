@@ -5,6 +5,11 @@ import json
 import sys
 from pathlib import Path
 
+try:
+    from status_map import SECTION_ORDER
+except ImportError:
+    SECTION_ORDER = ["in_progress", "blocked", "waiting", "todo", "backlog"]
+
 CACHE_FILE = Path(".jira_cache.json")
 
 def colorize(text, code):
@@ -36,12 +41,18 @@ def render_dashboard(data):
           f"Backlog: {colorize(backlog, '2')}  |  "
           f"Done: {colorize(done, '32')}")
 
-    # Sections
+    # Sections — order driven by SECTION_ORDER from status_map
+    section_colors = {
+        "in_progress": ("IN PROGRESS", "36"),
+        "blocked": ("BLOCKED", "31"),
+        "waiting": ("WAITING", "35"),
+        "todo": ("TO DO", "33"),
+        "backlog": ("BACKLOG", "2"),
+    }
     sections = [
-        ("IN PROGRESS", "in_progress", "36"),
-        ("BLOCKED", "blocked", "31"),
-        ("WAITING", "waiting", "35"),
-        ("TO DO", "todo", "33"),
+        (section_colors[key][0], key, section_colors[key][1])
+        for key in SECTION_ORDER
+        if key in section_colors
     ]
 
     for title, key, color in sections:
@@ -78,6 +89,10 @@ def main():
     except (json.JSONDecodeError, OSError) as e:
         print(f"Error reading cache: {e}")
         sys.exit(1)
+
+    cache_version = data.get("version", 1)
+    if cache_version < 2:
+        print("⚠ Cache format outdated. Run `/dashboard-sync` to refresh.")
 
     render_dashboard(data)
 

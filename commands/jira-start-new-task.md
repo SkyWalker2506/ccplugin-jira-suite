@@ -32,7 +32,7 @@ argument-hint: "[N=1] — number of tasks to start (max 20)"
 - Issues found: fix, commit, push, re-analyze+test
 - Clean: `gh pr merge --squash --delete-branch`
 - `git checkout main && git pull`
-- Jira Done transition
+- Jira Done transition (via dynamic getTransitionsForJiraIssue lookup)
 
 **Model rule:** Code = min Sonnet, Review = Opus. Haiku never writes code.
 
@@ -76,7 +76,7 @@ JQL: `project = {KEY} AND status = "In Progress" ORDER BY priority DESC`
 
 ### Step 2 — Fill remaining N from To Do
 JQL: `project = {KEY} AND status = "To Do" ORDER BY priority DESC`
-Per card: Transition 21 -> IP, write lock, start sub-agent.
+Per card: Call getTransitionsForJiraIssue, find "In Progress" transition, apply it, write lock, start sub-agent.
 
 ### Step 3 — If empty, report
 ```

@@ -1,0 +1,10 @@
+{
+  "base": ["Backlog", "To Do", "In Progress", "Review", "Testing", "Done", "Cancelled"],
+  "software": ["Backlog", "To Do", "In Progress", "Review", "Testing", "Done", "Cancelled", "WAITING FOR APPROVAL", "BLOCKED", "Released"],
+  "mobile": ["Backlog", "To Do", "In Progress", "Review", "Testing", "Done", "Cancelled", "WAITING FOR APPROVAL", "BLOCKED", "Released", "Beta"],
+  "ai-ml": ["Backlog", "To Do", "In Progress", "Review", "Testing", "Done", "Cancelled", "WAITING FOR APPROVAL", "BLOCKED", "Released", "Model Training"],
+  "saas": ["Backlog", "To Do", "In Progress", "Review", "Testing", "Done", "Cancelled", "WAITING FOR APPROVAL", "BLOCKED", "Released", "Staging", "Beta"],
+  "bot": ["Backlog", "To Do", "In Progress", "Review", "Testing", "Done", "Cancelled", "WAITING FOR APPROVAL", "BLOCKED", "Released", "Deploying"],
+  "ideas": ["Idea", "Evaluating", "Parked", "Accepted", "In Development", "Done", "Rejected", "Archived"],
+  "minimal": ["To Do", "In Progress", "Done"]
+}

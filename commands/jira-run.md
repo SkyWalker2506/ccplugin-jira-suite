@@ -62,12 +62,23 @@ Units: `s`=seconds, `m`=minutes, `h`=hours (decimal supported: `0.5h`=1800s).
 2. **2 consecutive empty rounds** -> log + cancel + exit
 3. **Stop file** -> check at start of each round; if exists, delete + cancel message + exit
 
+## Error Recovery
+
+- API call failures: retry up to 3 times with exponential backoff (2s, 4s, 8s)
+- MCP connection lost mid-loop: log error, attempt reconnect on next round
+- Transition failure: call `getTransitionsForJiraIssue` to refresh available transitions, retry once
+- If recovery fails after retries, log to `docs/jira_loop_log.md` and continue to next card/round
+
 ## Loop (each round sequence)
 
 1. Check `.jira-state/jira-run.stop` -> exit if exists
 2. Update `/tmp/jira_run_status.json` (watchdog)
 3. (Round 1) MCP access check -> exit if unavailable
 4. Execute `docs/CLAUDE_JIRA.md` protocol -> round summary
+
+### Transition Resolution
+All status transitions must use dynamic lookup via `getTransitionsForJiraIssue` — never hardcode transition IDs.
+
 5. Update empty round counter -> exit if 2 consecutive
 6. If not last round: `sleep(interval)`
 
@@ -84,3 +95,5 @@ See `docs/LOCK_SYSTEM.md`
 ## Log
 
 `docs/jira_loop_log.md` — newest on top. Updated on auto-exits.
+
+Log rotation: after writing to log, run `source scripts/log-rotate.sh && rotate_log "docs/jira_loop_log.md" 500` to keep the log under 500 lines.

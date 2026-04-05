@@ -53,12 +53,17 @@ Reply examples:
 ### Step 3: Apply user decisions
 
 Parse user reply. For each card:
-- T -> transition To Do (id 11) + comment "Decide: moved to To Do"
-- B -> transition Backlog (id 51) + comment "Decide: moved to Backlog"
+- T -> transition To Do (dynamic lookup) + comment "Decide: moved to To Do"
+- B -> transition Backlog (dynamic lookup) + comment "Decide: moved to Backlog"
 - W -> skip (no change)
-- D -> transition Done (id 31) + comment "Decide: closed"
+- D -> transition Done (dynamic lookup) + comment "Decide: closed"
 
-If a transition fails, call getTransitionsForJiraIssue to find the correct ID and retry.
+### Transition Resolution
+Do NOT hardcode transition IDs. For each card:
+1. Call `getTransitionsForJiraIssue` with the issue key
+2. Match target status name (e.g. "To Do", "Done", "Backlog") against available transitions
+3. Use the matched transition ID
+4. If no match: log warning, skip card, continue with next
 
 Show summary:
 ```
@@ -71,4 +76,4 @@ Done: 3 To Do | 2 Backlog | 1 Waiting | 1 Closed
 - Plain text only, NO markdown tables — must be mouse-selectable
 - Extract blocker reason from description (product decision? credential? dependency?)
 - Wait for single-line user reply before acting
-- On transition failure -> auto-retry with correct transition ID
+- On transition failure -> auto-retry with correct transition ID via `getTransitionsForJiraIssue`

@@ -11,6 +11,16 @@ Pull fresh data from Jira via MCP, write to `.jira_cache.json`, then render the 
 
 ## Execution
 
+### 0. MCP Connection Check
+
+Before fetching data, verify Atlassian MCP is accessible:
+- Call `getAccessibleAtlassianResources` 
+- If it fails or returns empty: show error and exit
+  ```
+  ✗ Atlassian MCP not connected. Check .mcp.json configuration.
+  ```
+- If successful: proceed to fetch
+
 ### 1. Fetch from Jira (2 parallel calls)
 
 Read project key from `docs/CLAUDE_JIRA.md` or `CLAUDE.md` (e.g. VOC, AC, TASK).
@@ -26,6 +36,7 @@ Parse results and write to `.jira_cache.json`:
 
 ```json
 {
+  "version": 2,
   "updated": "<ISO timestamp>",
   "summary": {"total": N, "todo": N, "in_progress": N, "waiting": N, "blocked": N, "backlog": N, "done": N},
   "todo": [{"key": "PROJECT-XX", "summary": "...", "priority": "High", "labels": [...]}],

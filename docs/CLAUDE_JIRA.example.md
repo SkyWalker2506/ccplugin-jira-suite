@@ -25,10 +25,13 @@ project = <PROJECT_KEY> AND status = "Done" ORDER BY updated DESC
 | Done | done |
 
 ## Transition IDs
-> Run `/dashboard-sync` first, then check transitions with Atlassian MCP `getTransitionsForJiraIssue`.
+> Transition IDs vary per project and workflow. Always use dynamic lookup:
+> `getTransitionsForJiraIssue` returns available transitions for each issue.
+>
+> Common transitions (for reference only — always verify dynamically):
 
-| Transition | ID |
-|------------|-----|
+| Transition | Typical ID |
+|------------|------------|
 | To Do → In Progress | 21 |
 | → WAITING FOR APPROVAL | 7 |
 | → Done | 31 |
