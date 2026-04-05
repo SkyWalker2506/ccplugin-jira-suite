@@ -43,7 +43,7 @@ JIRA_AUTH="${JIRA_EMAIL:-$JIRA_USERNAME}:${JIRA_API_TOKEN}"
 LEAD_ID=$(curl -s -u "$JIRA_AUTH" "${JIRA_URL}/rest/api/3/myself" | python3 -c "import json,sys; print(json.load(sys.stdin)['accountId'])")
 
 # Create project
-curl -s -u "$JIRA_AUTH" -X POST "${JIRA_URL}/rest/api/3/project" \
+RESULT=$(curl -s -w "\n%{http_code}" -u "$JIRA_AUTH" -X POST "${JIRA_URL}/rest/api/3/project" \
   -H "Content-Type: application/json" \
   -d '{
     "key": "<KEY>",
@@ -51,10 +51,30 @@ curl -s -u "$JIRA_AUTH" -X POST "${JIRA_URL}/rest/api/3/project" \
     "projectTypeKey": "software",
     "leadAccountId": "'$LEAD_ID'",
     "projectTemplateKey": "com.pyxis.greenhopper.jira:gh-simplified-agility-kanban"
-  }'
+  }')
+HTTP_CODE=$(echo "$RESULT" | tail -1)
+BODY=$(echo "$RESULT" | head -1)
+PROJECT_ID=$(echo "$BODY" | python3 -c "import json,sys; print(json.load(sys.stdin).get('id',''))" 2>/dev/null)
 ```
 
-Show the result. If 201, report success with the project URL.
+If HTTP 201 and PROJECT_ID obtained, create columns via board API:
+
+```bash
+# Find board ID for the new project
+BOARD_ID=$(curl -s -u "$JIRA_AUTH" "${JIRA_URL}/rest/agile/1.0/board?projectKeyOrId=<KEY>" | \
+  python3 -c "import json,sys; d=json.load(sys.stdin); print(d['values'][0]['id'] if d.get('values') else '')" 2>/dev/null)
+
+# Default columns for a software project (10 columns)
+COLUMNS=("Backlog" "To Do" "In Progress" "WAITING" "Blocked" "Review" "Testing" "Done" "Released" "Cancelled")
+
+for COL in "${COLUMNS[@]}"; do
+  curl -s -u "$JIRA_AUTH" -X POST "${JIRA_URL}/rest/agile/1.0/board/${BOARD_ID}/column" \
+    -H "Content-Type: application/json" \
+    -d '{"name": "'"$COL"'"}' > /dev/null
+done
+```
+
+Report: project URL `${JIRA_URL}/jira/software/projects/<KEY>/boards` + columns created.
 
 ### `move-issue <ISSUE_KEY> <TARGET_PROJECT_KEY>`
 
@@ -76,8 +96,29 @@ Report old key → new key mapping.
 ### `setup-token`
 
 Check if JIRA_URL, JIRA_EMAIL, JIRA_API_TOKEN exist in `~/.claude/secrets/secrets.env`.
-If missing, guide the user through setup (see Prerequisites above).
-If present, verify by calling `/rest/api/3/myself` and showing the result.
+
+**If missing or incomplete:**
+1. Open the API token page in browser:
+```bash
+# macOS
+open "https://id.atlassian.com/manage-profile/security/api-tokens" 2>/dev/null || \
+# Linux
+xdg-open "https://id.atlassian.com/manage-profile/security/api-tokens" 2>/dev/null || true
+```
+2. Open the secrets file in editor:
+```bash
+SECRETS_FILE="$HOME/.claude/secrets/secrets.env"
+mkdir -p "$(dirname "$SECRETS_FILE")"
+touch "$SECRETS_FILE"
+# macOS
+open -e "$SECRETS_FILE" 2>/dev/null || \
+# Linux/fallback
+${EDITOR:-nano} "$SECRETS_FILE" 2>/dev/null || \
+xdg-open "$SECRETS_FILE" 2>/dev/null || true
+```
+3. Tell user: "Tarayıcıda token sayfasını ve secrets.env dosyasını açtım. Token oluşturduktan sonra secrets.env'e ekle, sonra tekrar çalıştır."
+
+**If all present:** verify by calling `/rest/api/3/myself` and showing display name + email.
 
 ## Routing
 
