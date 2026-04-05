@@ -2,10 +2,7 @@
   "name": "jira-suite",
   "version": "1.0.0",
   "description": "Jira & sprint management suite for Claude Code \u2014 run loops, dashboards, decisions, task pipelines",
-  "author": {
-    "name": "Musab Kara",
-    "url": "https://github.com/SkyWalker2506"
-  },
+  "author": "Musab Kara",
   "license": "MIT",
   "category": "productivity",
   "keywords": [
@@ -19,38 +16,18 @@
     "project-management"
   ],
   "commands": [
-    {
-      "path": "commands/jira-run.md"
-    },
-    {
-      "path": "commands/jira-run-fast.md"
-    },
-    {
-      "path": "commands/jira-run-detailed.md"
-    },
-    {
-      "path": "commands/jira-cancel.md"
-    },
-    {
-      "path": "commands/jira-start-new-task.md"
-    },
-    {
-      "path": "commands/decide.md"
-    },
-    {
-      "path": "commands/dashboard.md"
-    },
-    {
-      "path": "commands/dashboard-sync.md"
-    },
-    {
-      "path": "commands/jira-admin.md"
-    }
+    "commands/jira-run.md",
+    "commands/jira-run-fast.md",
+    "commands/jira-run-detailed.md",
+    "commands/jira-cancel.md",
+    "commands/jira-start-new-task.md",
+    "commands/decide.md",
+    "commands/dashboard.md",
+    "commands/dashboard-sync.md",
+    "commands/jira-admin.md"
   ],
   "skills": [
-    {
-      "path": "skills/jira-suite/SKILL.md"
-    }
+    "skills/jira-suite/SKILL.md"
   ],
   "mcp": ".mcp.json"
 }
