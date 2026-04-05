@@ -1,0 +1,28 @@
+{
+  "version": 2,
+  "updated": "2026-04-05T12:00:00Z",
+  "sprint": {"name": "Sprint 1", "id": 1, "state": "active"},
+  "summary": {"total": 10, "todo": 3, "in_progress": 2, "waiting": 1, "blocked": 1, "backlog": 1, "done": 2},
+  "todo": [
+    {"key": "DEMO-10", "summary": "Add user authentication", "priority": "High", "labels": ["security"]},
+    {"key": "DEMO-9", "summary": "Create API documentation", "priority": "Medium", "labels": ["growth"]},
+    {"key": "DEMO-8", "summary": "Add dark mode support", "priority": "Low", "labels": ["competitive"]}
+  ],
+  "in_progress": [
+    {"key": "DEMO-7", "summary": "Fix login validation bug", "priority": "High", "labels": ["security"]},
+    {"key": "DEMO-6", "summary": "Refactor database queries", "priority": "Medium", "labels": ["arch"]}
+  ],
+  "waiting": [
+    {"key": "DEMO-5", "summary": "Integrate payment gateway", "priority": "High", "labels": ["competitive"]}
+  ],
+  "blocked": [
+    {"key": "DEMO-4", "summary": "Deploy to production", "priority": "High", "labels": ["arch"]}
+  ],
+  "backlog": [
+    {"key": "DEMO-3", "summary": "Add email notifications", "priority": "Low", "labels": ["competitive"]}
+  ],
+  "done_recent": [
+    {"key": "DEMO-2", "summary": "Setup CI/CD pipeline"},
+    {"key": "DEMO-1", "summary": "Initial project scaffolding"}
+  ]
+}

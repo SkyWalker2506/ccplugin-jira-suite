@@ -1,5 +1,48 @@
 # Releases
 
+## v1.5.0 — 2026-04-05
+### Scaling & Ecosystem (Sprint 5)
+- Add multi-project support with /jira-switch command
+- Add sprint reports (/jira-report — summary, velocity, done, full)
+- Add bulk issue linking operations
+- Create use-cases documentation (3 scenarios)
+- Add command examples with terminal output
+- Create .demo/ sandbox for testing without Jira
+
+## v1.4.0 — 2026-04-05
+### Competitive Features (Sprint 4)
+- Add sprint auto-detection with openSprints() JQL
+- Add issue linking command (/jira-link — blocks/relates/duplicates)
+- Add worklog/time tracking command (/jira-worklog)
+- Add token rotation reminder (30-day expiry warning)
+- Add audit log for admin operations
+- Add interactive command menu for /jira intent
+- Add dry-run mode for jira-run
+- Add shared color helpers
+
+## v1.3.0 — 2026-04-05
+### Architecture & Robustness (Sprint 3)
+- Replace hardcoded transition IDs with dynamic lookup
+- Add error recovery with exponential backoff retry
+- Document shared state schema
+- Move column templates to templates/columns.json
+- Add dashboard cache version field
+- Centralize status mapping
+- Add MCP connection check to dashboard-sync
+- Add log rotation and trap cleanup
+- Add jira-cancel support for multi-agent pipeline
+
+## v1.2.0 — 2026-04-05
+### Growth & Onboarding (Sprint 2)
+- Add README quickstart and value proposition sections
+- Expand plugin.json keywords from 8 to 20
+- Create CLAUDE_JIRA.example.md config template
+- Add /jira-init command for project bootstrap
+- Create agent-template.md and LOCK_SYSTEM.md docs
+- Add RELEASES.md changelog
+- Standardize error handling with prereq-check.sh
+- Add GitHub repo topics for SEO
+
 ## v1.1.0 — 2026-04-05
 ### Security & Critical Fixes (Sprint 1)
 - Replace curl basic auth with header-based authentication

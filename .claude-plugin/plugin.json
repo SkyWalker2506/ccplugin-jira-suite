@@ -42,7 +42,9 @@
     "commands/jira-admin.md",
     "commands/jira-init.md",
     "commands/jira-link.md",
-    "commands/jira-worklog.md"
+    "commands/jira-worklog.md",
+    "commands/jira-switch.md",
+    "commands/jira-report.md"
   ],
   "skills": [
     "skills/jira-suite/SKILL.md"

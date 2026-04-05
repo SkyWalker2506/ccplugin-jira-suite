@@ -48,3 +48,32 @@ Call `createIssueLink` with:
 ```
 
 If error, show the error and available link types.
+
+## Bulk Mode
+
+Link multiple issues at once:
+
+| Input | Behavior |
+|-------|----------|
+| `JS-10,JS-11,JS-12 blocks JS-20` | All three block JS-20 |
+| `JS-10 relates JS-11,JS-12,JS-13` | JS-10 relates to all three |
+| `bulk` | Interactive mode — paste issue keys |
+
+### Bulk Argument Parsing
+- Comma-separated keys on either side expand to multiple links
+- Each expanded pair is processed independently
+- Show progress: `[1/3] JS-10 blocks JS-20 ✓`
+
+### Interactive Bulk Mode
+When argument is `bulk`:
+```
+Bulk link mode. Enter links one per line (empty line to finish):
+Format: FROM_KEY type TO_KEY
+
+> JS-10 blocks JS-20
+> JS-11 relates JS-12
+> JS-13 duplicates JS-14
+>
+
+✓ 3 links created (0 errors)
+```
