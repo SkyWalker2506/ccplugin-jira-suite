@@ -205,3 +205,11 @@ Based on `$ARGUMENTS`:
 - `move-issue` or "move" or "taşı" → move-issue flow
 - `setup` or `token` or `login` → setup-token flow
 - Empty → list available operations with examples
+
+## Audit Logging
+
+All admin operations are logged to `docs/audit_log.md`. Each operation sources `scripts/audit-log.sh` and calls:
+```bash
+source "$(dirname "$0")/audit-log.sh"
+audit_log "<operation>" "<details>"
+```

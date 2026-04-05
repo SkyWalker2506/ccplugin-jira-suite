@@ -56,6 +56,30 @@ Run at repo root: `cd "$(git rev-parse --show-toplevel)"` if needed.
 
 Units: `s`=seconds, `m`=minutes, `h`=hours (decimal supported: `0.5h`=1800s).
 
+## Dry-run Mode
+
+Append `--dry-run` or `dry` to arguments to enable dry-run mode.
+
+| Input | Behavior |
+|-------|----------|
+| `/jira-run --dry-run` | 10 rounds, 1m interval, dry-run |
+| `/jira-run 5 1s --dry-run` | 5 rounds, 1s, dry-run |
+| `/jira-run dry` | 10 rounds, 1m, dry-run |
+
+In dry-run mode:
+- **Reads** all data normally (JQL queries, issue details)
+- **Shows** what transitions/edits would be made
+- **Does NOT** execute any writes (no transitions, no edits, no comments)
+- Prefixes output with `[DRY-RUN]`
+- Useful for testing JQL queries and understanding loop behavior
+
+Example output:
+```
+[DRY-RUN] Would transition JS-10 → In Progress (id: 21)
+[DRY-RUN] Would add comment to JS-15: "Stale IP — moving to To Do"
+[DRY-RUN] Round 1/10 complete — 3 actions would be taken
+```
+
 ## Auto-exit conditions
 
 1. **No MCP (round 1)** -> update `docs/jira_loop_log.md` + cancel + exit

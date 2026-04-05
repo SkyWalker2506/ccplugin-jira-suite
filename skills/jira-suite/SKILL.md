@@ -34,6 +34,29 @@ When triggered, determine intent and suggest or invoke the appropriate command:
 3. Always read `docs/CLAUDE_JIRA.md` for project key and configuration before making Jira API calls.
 4. If Atlassian MCP is not connected, warn the user and suggest checking MCP configuration.
 
+## Intent Menu
+
+When intent is ambiguous or user just types `/jira` with no clear action, show this quick menu:
+
+```
+JIRA SUITE — What would you like to do?
+
+  1  /dashboard-sync    Refresh board data and show dashboard
+  2  /dashboard         Quick board view (from cache)
+  3  /jira-run          Start automated check loop
+  4  /jira-run-fast     Fast loop (1s intervals)
+  5  /jira-run-detailed Deep board audit
+  6  /jira-start-new-task  Pick tasks and start coding pipeline
+  7  /decide            Review WAITING cards
+  8  /jira-init         Setup Jira for this project
+  9  /jira-link         Link issues (blocks/relates)
+ 10  /jira-worklog      Log time on an issue
+ 11  /jira-admin        Admin operations (create project, etc.)
+ 12  /jira-cancel       Stop running loop
+
+Type a number or command name:
+```
+
 ## Prerequisites
 
 - Atlassian MCP server must be configured and connected

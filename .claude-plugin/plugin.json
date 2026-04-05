@@ -40,7 +40,9 @@
     "commands/dashboard.md",
     "commands/dashboard-sync.md",
     "commands/jira-admin.md",
-    "commands/jira-init.md"
+    "commands/jira-init.md",
+    "commands/jira-link.md",
+    "commands/jira-worklog.md"
   ],
   "skills": [
     "skills/jira-suite/SKILL.md"

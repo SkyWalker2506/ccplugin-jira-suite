@@ -6,15 +6,9 @@
 
 set -euo pipefail
 
-# Color codes
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-NC='\033[0m'
-
-err() { echo -e "${RED}✗ $1${NC}" >&2; }
-ok()  { echo -e "${GREEN}✓ $1${NC}"; }
-warn() { echo -e "${YELLOW}⚠ $1${NC}"; }
+# Source shared colors
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/colors.sh"
 
 # Check required commands
 for cmd in python3 curl jq; do

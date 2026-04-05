@@ -21,6 +21,16 @@ Before fetching data, verify Atlassian MCP is accessible:
   ```
 - If successful: proceed to fetch
 
+### 0.5. Sprint Detection (optional)
+
+If the project uses sprints, detect the active sprint:
+- JQL: `project = {KEY} AND sprint in openSprints()`
+- Add sprint info to cache under `"sprint"` key:
+  ```json
+  "sprint": {"name": "Sprint 3", "id": 42, "state": "active"}
+  ```
+- If no active sprint found, set `"sprint": null`
+
 ### 1. Fetch from Jira (2 parallel calls)
 
 Read project key from `docs/CLAUDE_JIRA.md` or `CLAUDE.md` (e.g. VOC, AC, TASK).
@@ -38,6 +48,7 @@ Parse results and write to `.jira_cache.json`:
 {
   "version": 2,
   "updated": "<ISO timestamp>",
+  "sprint": {"name": "Sprint 3", "id": 42, "state": "active"},
   "summary": {"total": N, "todo": N, "in_progress": N, "waiting": N, "blocked": N, "backlog": N, "done": N},
   "todo": [{"key": "PROJECT-XX", "summary": "...", "priority": "High", "labels": [...]}],
   "in_progress": [...],
