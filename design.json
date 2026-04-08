@@ -1,0 +1,61 @@
+{
+  "cds_version": "1.0",
+  "name": "ccplugin-jira-suite",
+  "type": "plugin",
+  "input_patterns": [
+    {
+      "type": "slash_command",
+      "commands": [
+        "/run-jira",
+        "/check-dashboard",
+        "/run-decide"
+      ]
+    },
+    {
+      "type": "auto_trigger",
+      "keywords": [
+        "jira",
+        "sprint",
+        "backlog",
+        "kanban"
+      ],
+      "confirm": false,
+      "cooldown": 0
+    }
+  ],
+  "output_patterns": [
+    {
+      "type": "terminal_text",
+      "max_lines": 20
+    },
+    {
+      "type": "cache_file",
+      "path": "~/.cache/claude/jira-suite/",
+      "ttl_seconds": 3600
+    },
+    {
+      "type": "structured_output",
+      "description": "Jira card transitions via Atlassian API"
+    }
+  ],
+  "lifecycle": {
+    "preflight": {
+      "required_tools": [
+        "jq"
+      ],
+      "required_secrets": [
+        "JIRA_URL",
+        "JIRA_USERNAME",
+        "JIRA_API_TOKEN"
+      ],
+      "required_mcp": [
+        "atlassian"
+      ]
+    }
+  },
+  "error_handling": {
+    "retry_network": true,
+    "max_retries": 3,
+    "fallback": "cached dashboard data"
+  }
+}
