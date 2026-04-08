@@ -1,57 +1,12 @@
 {
   "name": "jira-suite",
   "version": "1.5.0",
-  "description": "Jira & sprint management suite for Claude Code — 14 commands, multi-agent pipeline, zero-token dashboard, autonomous task loops, and AI-native workflow automation",
+  "description": "Jira & sprint management suite for Claude Code — 14 commands, multi-agent pipeline, zero-token dashboard, autonomous task loops, and AI-native workflow automation.",
   "author": {
     "name": "Musab Kara",
     "url": "https://github.com/SkyWalker2506"
   },
   "license": "MIT",
   "category": "productivity",
-  "keywords": [
-    "jira",
-    "sprint",
-    "dashboard",
-    "agile",
-    "scrum",
-    "kanban",
-    "task-management",
-    "autonomous",
-    "multi-agent",
-    "cli",
-    "atlassian",
-    "project-management",
-    "workflow",
-    "ai-native",
-    "automation",
-    "backlog",
-    "board",
-    "loop",
-    "pipeline",
-    "standup",
-    "decision",
-    "planning",
-    "issue-tracker",
-    "devops"
-  ],
-  "commands": [
-    "commands/jira-run.md",
-    "commands/jira-run-fast.md",
-    "commands/jira-run-detailed.md",
-    "commands/jira-cancel.md",
-    "commands/jira-start-new-task.md",
-    "commands/decide.md",
-    "commands/dashboard.md",
-    "commands/dashboard-sync.md",
-    "commands/jira-admin.md",
-    "commands/jira-init.md",
-    "commands/jira-link.md",
-    "commands/jira-worklog.md",
-    "commands/jira-switch.md",
-    "commands/jira-report.md"
-  ],
-  "skills": [
-    "skills/jira-suite/SKILL.md"
-  ],
-  "mcp": ".mcp.json"
+  "keywords": ["jira", "sprint", "dashboard", "agile", "scrum", "kanban", "task-management", "atlassian"]
 }
