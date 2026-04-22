@@ -18,3 +18,9 @@ docs/audit_log.md
 
 # Local Claude Code settings
 .claude/settings.local.json
+
+# Generated reports (from /jira-report --export)
+reports/
+
+# Forge run artifacts (summaries, lessons, event logs)
+forge/
