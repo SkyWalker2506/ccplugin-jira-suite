@@ -79,6 +79,51 @@ Review WAITING FOR APPROVAL cards. Press `T` (top priority), `B` (bottom), `W` (
 
 ---
 
+## Using jira-suite in IDEs
+
+### VS Code (with Claude extension)
+
+If you use the [Claude for VS Code extension](https://marketplace.visualstudio.com/items?itemName=Anthropic.claude):
+
+1. Install jira-suite from the Claude extension marketplace panel
+2. Open your project folder in VS Code
+3. Use commands in the Claude chat panel exactly as you would in Claude Code CLI:
+   ```
+   /dashboard-sync
+   /jira-run 10 1m
+   /decide
+   ```
+4. The extension shares the same plugin config — your `docs/CLAUDE_JIRA.md` is read from the open workspace root
+
+**Note:** Background agents (`jira-run` in background mode) require Claude Code CLI. In VS Code, the loop runs in the active chat session.
+
+### Cursor
+
+Cursor supports Claude Code plugins natively:
+
+1. Open Cursor settings → AI → Claude Plugins
+2. Install `jira-suite` or point to the local plugin directory
+3. Open your project in Cursor
+4. Use commands in any chat window:
+   ```
+   /dashboard
+   /jira-start-new-task 3
+   /jira-report full
+   ```
+
+**Cursor advantage:** Cursor's inline editing mode pairs well with `/jira-start-new-task` — the task agent writes code directly into your editor while Jira transitions are handled in the background.
+
+### Tip: multi-project in IDEs
+
+If you work across multiple Jira projects in one IDE session, use `/jira-switch`:
+```
+/jira-switch JS      ← switch to JS project
+/jira-switch VOC     ← switch to VOC project
+/jira-switch         ← list available projects
+```
+
+---
+
 ## Troubleshooting
 
 ### "MCP server not connected" or Atlassian tool errors
