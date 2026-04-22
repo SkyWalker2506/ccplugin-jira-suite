@@ -1,8 +1,8 @@
 ---
 name: jira-report
-description: "Generate sprint reports — completed count, velocity, status breakdown, sprint health."
+description: "Generate sprint reports — completed count, velocity, status breakdown, sprint health. Use --export to save to file."
 allowed-tools: ["Bash", "Read", "Write", "mcp__atlassian__searchJiraIssuesUsingJql", "mcp__atlassian__getJiraIssue"]
-argument-hint: "[type] — summary | velocity | done | full (default: summary)"
+argument-hint: "[type] [--export] — summary | velocity | done | full (default: summary)"
 ---
 
 ## What it does
@@ -17,6 +17,35 @@ Generate reports about the current sprint and project health.
 | `/jira-report velocity` | Sprint velocity (done per sprint) |
 | `/jira-report done` | Recently completed issues |
 | `/jira-report full` | All reports combined |
+| `/jira-report --export` | Summary report + save to `reports/` directory |
+| `/jira-report full --export` | Full report + save to file |
+
+## Export Flag
+
+When `--export` is present in arguments:
+
+1. Strip `--export` from the argument before determining report type
+2. Generate the report normally (render to terminal)
+3. Also save a Markdown version to:
+   ```
+   reports/jira-report-{PROJECT_KEY}-{YYYY-MM-DD-HHMMSS}.md
+   ```
+4. Create `reports/` directory if it does not exist (`mkdir -p reports`)
+5. Strip ANSI color codes from the saved file — plain Markdown only
+6. Confirm: `✓ Report saved to reports/jira-report-{PROJECT_KEY}-{timestamp}.md`
+
+**Markdown format for exported file:**
+```markdown
+# Jira Report — {PROJECT_KEY}
+Generated: {timestamp}
+Type: {summary|velocity|done|full}
+
+## Status Breakdown
+...
+
+## Velocity
+...
+```
 
 ## Execution
 
@@ -69,4 +98,4 @@ COMPLETED — {PROJECT_KEY} (last 14 days)
 Combines all three reports above.
 
 ## Output
-Display in terminal with colors (use ANSI codes). Do NOT write to file unless user requests it.
+Display in terminal with colors (use ANSI codes). Write to file only when `--export` flag is present — strip ANSI codes from the file version.
