@@ -8,5 +8,26 @@
   },
   "license": "MIT",
   "category": "productivity",
-  "keywords": ["jira", "sprint", "dashboard", "agile", "scrum", "kanban", "task-management", "atlassian"]
+  "keywords": [
+    "jira",
+    "sprint",
+    "dashboard",
+    "agile",
+    "scrum",
+    "kanban",
+    "task-management",
+    "atlassian",
+    "claude-code",
+    "workflow",
+    "automation",
+    "project-management",
+    "issue-tracker",
+    "backlog",
+    "velocity",
+    "multi-agent",
+    "zero-token",
+    "autonomous",
+    "devops",
+    "productivity"
+  ]
 }
