@@ -32,15 +32,19 @@ JIRA_AUTH_HEADER="Authorization: Basic $(printf '%s' "${JIRA_EMAIL:-$JIRA_USERNA
 
 ### Input validation
 
-```bash
-validate_project_key() {
-  [[ "$1" =~ ^[A-Z][A-Z0-9]{1,9}$ ]] || { echo "❌ Invalid PROJECT_KEY: '$1' (must match [A-Z][A-Z0-9]{1,9})"; exit 1; }
-}
+Validation helpers are defined in `scripts/prereq-check.sh` — the single source of truth.
+Source it to get `validate_project_key` and `validate_issue_key`:
 
-validate_issue_key() {
-  [[ "$1" =~ ^[A-Z][A-Z0-9]{1,9}-[0-9]+$ ]] || { echo "❌ Invalid ISSUE_KEY: '$1' (must match KEY-123)"; exit 1; }
-}
+```bash
+# Source validation helpers from prereq-check.sh
+# Note: prereq-check.sh also checks JIRA_CONFIG and exports PROJECT_KEY.
+# For admin operations that don't need a local config, source functions only:
+source "$(dirname "$0")/../scripts/prereq-check.sh" 2>/dev/null || true
 ```
+
+Both functions follow the same contract:
+- `validate_project_key KEY` — exits 1 if KEY doesn't match `^[A-Z][A-Z0-9]{1,9}$`
+- `validate_issue_key KEY` — exits 1 if KEY doesn't match `^[A-Z][A-Z0-9]{1,9}-[0-9]+$`
 
 ---
 
