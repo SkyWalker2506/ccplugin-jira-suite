@@ -84,6 +84,26 @@ def render_dashboard(data):
     print(colorize(f"\n{'=' * 60}\n", "1"))
 
 
+REQUIRED_KEYS = ["version", "updated", "summary"]
+REQUIRED_SUMMARY_KEYS = ["total", "todo", "in_progress", "done"]
+MIN_VERSION = 2
+
+
+def validate_cache(data: dict) -> tuple:
+    """Validate cache schema. Returns (ok: bool, reason: str)."""
+    for key in REQUIRED_KEYS:
+        if key not in data:
+            return False, f"missing required key: '{key}'"
+    version = data.get("version", 0)
+    if version < MIN_VERSION:
+        return False, f"version {version} is outdated (min: {MIN_VERSION}) — run /dashboard-sync"
+    summary = data.get("summary", {})
+    for key in REQUIRED_SUMMARY_KEYS:
+        if key not in summary:
+            return False, f"summary missing key: '{key}'"
+    return True, "ok"
+
+
 def main():
     if not CACHE_FILE.exists():
         print("No cache found. Run `/dashboard-sync` first.")
@@ -95,9 +115,11 @@ def main():
         print(f"Error reading cache: {e}")
         sys.exit(1)
 
-    cache_version = data.get("version", 1)
-    if cache_version < 2:
-        print("⚠ Cache format outdated. Run `/dashboard-sync` to refresh.")
+    ok, reason = validate_cache(data)
+    if not ok:
+        print(f"✗ Cache validation failed: {reason}")
+        print("  Run /dashboard-sync to regenerate.")
+        sys.exit(1)
 
     render_dashboard(data)
 

@@ -63,6 +63,51 @@ Status mapping is centralized in `scripts/status_map.py` (`STATUS_MAP` dict).
 Use `map_status(jira_status)` to convert any Jira status string to its internal key.
 `"Done"` maps to `done_recent` (last 10).
 
+### 2.5. Cache schema validation
+
+Before rendering, validate the written cache:
+
+```python
+import json
+from pathlib import Path
+
+REQUIRED_KEYS = ["version", "updated", "summary"]
+REQUIRED_SUMMARY_KEYS = ["total", "todo", "in_progress", "done"]
+MIN_VERSION = 2
+
+def validate_cache(cache_path=".jira_cache.json"):
+    if not Path(cache_path).exists():
+        return False, "Cache file missing"
+    try:
+        data = json.loads(Path(cache_path).read_text())
+    except json.JSONDecodeError as e:
+        return False, f"Cache is not valid JSON: {e}"
+    
+    for key in REQUIRED_KEYS:
+        if key not in data:
+            return False, f"Cache missing required key: '{key}'"
+    
+    version = data.get("version", 0)
+    if version < MIN_VERSION:
+        return False, f"Cache version {version} is outdated (min: {MIN_VERSION})"
+    
+    summary = data.get("summary", {})
+    for key in REQUIRED_SUMMARY_KEYS:
+        if key not in summary:
+            return False, f"Cache summary missing key: '{key}'"
+    
+    return True, "ok"
+```
+
+If validation fails:
+```
+✗ Cache validation failed: {reason}
+  Run /dashboard-sync to regenerate.
+```
+Stop — do not attempt to render a broken cache.
+
+If validation passes: proceed silently to render.
+
 ### 3. Render dashboard
 
 ```bash
