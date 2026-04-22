@@ -1,3 +1,19 @@
+## v1.6.0 — 2026-04-22
+### Sprint 6: Quality, Testing & Ecosystem
+- Add cache schema validation (validate_cache) to dashboard.py — exits with clear error on stale or corrupt cache
+- Add scripts/bump-version.sh — semver bump, RELEASES.md prepend, optional git tag, dry-run support
+- Add bash test suite (tests/run_tests.sh) with 30 tests across 4 test files
+- Add test_retry.sh, test_sprint_detect.sh, test_dashboard.sh, test_jira_switch.sh
+- Add jira-report --export flag — saves ANSI-stripped report to reports/ directory
+- Extend jira-link with GitHub PR URL mode — creates Atlassian remotelink from PR URL
+- Add IDE integration guide to GETTING_STARTED.md (VS Code, Cursor, multi-project tips)
+- Add GitHub issue templates (bug report, feature request) and CONTRIBUTING.md
+- Add community feedback discussion template
+- Expand plugin.json keywords from 8 to 20; add repository, homepage, bugs metadata fields
+- Fix dashboard.py sys.path — status_map.py now importable regardless of working directory
+- Add engines field to plugin.json (claude-code >=1.0.0)
+
+
 # Releases
 
 ## v1.5.0 — 2026-04-05

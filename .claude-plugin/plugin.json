@@ -1,6 +1,6 @@
 {
   "name": "jira-suite",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "Jira & sprint management suite for Claude Code — 14 commands, multi-agent pipeline, zero-token dashboard, autonomous task loops, and AI-native workflow automation.",
   "author": {
     "name": "Musab Kara",
@@ -16,6 +16,9 @@
     "url": "https://github.com/SkyWalker2506/ccplugin-jira-suite/issues"
   },
   "category": "productivity",
+  "engines": {
+    "claude-code": ">=1.0.0"
+  },
   "keywords": [
     "jira",
     "sprint",
