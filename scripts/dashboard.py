@@ -5,6 +5,11 @@ import json
 import sys
 from pathlib import Path
 
+# Ensure status_map is importable regardless of working directory
+_SCRIPT_DIR = Path(__file__).resolve().parent
+if str(_SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPT_DIR))
+
 try:
     from status_map import SECTION_ORDER
 except ImportError:
